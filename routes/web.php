@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocumentRequirementController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LearnerController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/learners/{learner}/documents/{documentRequirement}', [DocumentRequirementController::class, 'update'])
         ->name('learners.documents.update');
     Route::get('/learners/{learner}', [LearnerController::class, 'show'])->name('learners.show');
+    Route::get('/exports/learners', [ExportController::class, 'learners'])->name('exports.learners');
+    Route::get('/exports/missing-documents', [ExportController::class, 'missingDocuments'])->name('exports.missing-documents');
     Route::get('/imports', [ImportController::class, 'index'])->name('imports.index');
     Route::post('/imports', [ImportController::class, 'store'])->name('imports.store');
 

@@ -86,6 +86,14 @@ export default function LearnersIndex({
         setStatus('');
         router.get(route('learners.index'), {}, { replace: true });
     };
+    const learnerExportUrl = route('exports.learners', {
+        search: filters.search,
+        level: filters.level,
+        status: filters.status,
+    });
+    const missingDocumentsExportUrl = route('exports.missing-documents', {
+        level: filters.level,
+    });
 
     return (
         <AuthenticatedLayout
@@ -188,7 +196,7 @@ export default function LearnersIndex({
                     </form>
 
                     <section className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+                        <div className="flex flex-col gap-3 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h3 className="text-base font-semibold text-gray-900">
                                     Current learner records
@@ -197,6 +205,20 @@ export default function LearnersIndex({
                                     Showing {learners.from ?? 0}-
                                     {learners.to ?? 0} of {learners.total}
                                 </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                <a
+                                    href={learnerExportUrl}
+                                    className="rounded-md border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                                >
+                                    Export learners
+                                </a>
+                                <a
+                                    href={missingDocumentsExportUrl}
+                                    className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-800 hover:bg-amber-100"
+                                >
+                                    Missing docs
+                                </a>
                             </div>
                         </div>
 
