@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DocumentRequirementController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\LearnerController;
 use App\Http\Controllers\ProfileController;
@@ -22,6 +23,8 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/learners', [LearnerController::class, 'index'])->name('learners.index');
+    Route::patch('/learners/{learner}/documents/{documentRequirement}', [DocumentRequirementController::class, 'update'])
+        ->name('learners.documents.update');
     Route::get('/learners/{learner}', [LearnerController::class, 'show'])->name('learners.show');
     Route::get('/imports', [ImportController::class, 'index'])->name('imports.index');
     Route::post('/imports', [ImportController::class, 'store'])->name('imports.store');

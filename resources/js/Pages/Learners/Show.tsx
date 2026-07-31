@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { FormEventHandler } from 'react';
 
 type ActiveYear = {
     id: number;
@@ -30,6 +31,13 @@ type DocumentRequirement = {
     expires_on: string | null;
     notes: string | null;
 };
+
+const documentStatuses = [
+    { value: 'ok', label: 'OK' },
+    { value: 'missing', label: 'Missing' },
+    { value: 'expired', label: 'Expired' },
+    { value: 'pending_review', label: 'Pending review' },
+];
 
 type LearnerProfile = {
     id: number;
@@ -149,30 +157,11 @@ export default function LearnersShow({ activeYear, learner }: Props) {
                             <div className="divide-y divide-gray-200">
                                 {learner.document_requirements.map(
                                     (document) => (
-                                        <div
+                                        <DocumentRequirementForm
                                             key={document.id}
-                                            className="grid gap-3 px-6 py-4 sm:grid-cols-[minmax(0,1fr)_160px]"
-                                        >
-                                            <div>
-                                                <p className="font-semibold text-gray-900">
-                                                    {document.label}
-                                                </p>
-                                                <p className="mt-1 text-sm text-gray-500">
-                                                    {document.notes ??
-                                                        'No notes recorded'}
-                                                </p>
-                                            </div>
-                                            <div className="sm:text-right">
-                                                <StatusBadge
-                                                    status={document.status}
-                                                />
-                                                <p className="mt-2 text-xs text-gray-500">
-                                                    Expires:{' '}
-                                                    {document.expires_on ??
-                                                        'Not set'}
-                                                </p>
-                                            </div>
-                                        </div>
+                                            learnerId={learner.id}
+                                            document={document}
+                                        />
                                     ),
                                 )}
                             </div>
@@ -300,6 +289,116 @@ function SmallMetric({
                 {label}
             </p>
         </div>
+    );
+}
+
+function DocumentRequirementForm({
+    learnerId,
+    document,
+}: {
+    learnerId: number;
+    document: DocumentRequirement;
+}) {
+    const { data, setData, patch, processing, errors, isDirty } = useForm({
+        status: document.status,
+        expires_on: document.expires_on ?? '',
+        notes: document.notes ?? '',
+    });
+
+    const submit: FormEventHandler = (event) => {
+        event.preventDefault();
+
+        patch(route('learners.documents.update', [learnerId, document.id]), {
+            preserveScroll: true,
+        });
+    };
+
+    return (
+        <form
+            onSubmit={submit}
+            className="grid gap-4 px-6 py-4 lg:grid-cols-[210px_minmax(0,1fr)_120px]"
+        >
+            <div>
+                <p className="font-semibold text-gray-900">{document.label}</p>
+                <div className="mt-2">
+                    <StatusBadge status={document.status} />
+                </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-[180px_170px_minmax(0,1fr)]">
+                <label className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Status
+                    </span>
+                    <select
+                        value={data.status}
+                        onChange={(event) =>
+                            setData('status', event.target.value)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                        {documentStatuses.map((status) => (
+                            <option key={status.value} value={status.value}>
+                                {status.label}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.status && (
+                        <p className="mt-1 text-xs text-red-600">
+                            {errors.status}
+                        </p>
+                    )}
+                </label>
+
+                <label className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Expires
+                    </span>
+                    <input
+                        type="date"
+                        value={data.expires_on}
+                        onChange={(event) =>
+                            setData('expires_on', event.target.value)
+                        }
+                        className="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                    {errors.expires_on && (
+                        <p className="mt-1 text-xs text-red-600">
+                            {errors.expires_on}
+                        </p>
+                    )}
+                </label>
+
+                <label className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                        Notes
+                    </span>
+                    <textarea
+                        value={data.notes}
+                        onChange={(event) =>
+                            setData('notes', event.target.value)
+                        }
+                        rows={2}
+                        className="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    />
+                    {errors.notes && (
+                        <p className="mt-1 text-xs text-red-600">
+                            {errors.notes}
+                        </p>
+                    )}
+                </label>
+            </div>
+
+            <div className="flex items-start justify-end">
+                <button
+                    type="submit"
+                    disabled={processing || !isDirty}
+                    className="inline-flex h-10 items-center rounded-md bg-gray-900 px-4 text-sm font-semibold text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    Save
+                </button>
+            </div>
+        </form>
     );
 }
 

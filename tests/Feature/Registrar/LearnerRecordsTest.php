@@ -5,6 +5,7 @@ namespace Tests\Feature\Registrar;
 use App\Enums\DocumentStatus;
 use App\Enums\DocumentType;
 use App\Models\AcademicYear;
+use App\Models\AuditEvent;
 use App\Models\DocumentRequirement;
 use App\Models\Enrollment;
 use App\Models\Learner;
@@ -96,6 +97,76 @@ class LearnerRecordsTest extends TestCase
                 ->where('learner.document_requirements.2.document_type', DocumentType::Passport->value)
                 ->where('learner.document_requirements.2.status', DocumentStatus::Missing->value)
             );
+    }
+
+    public function test_registrar_can_update_document_requirement_with_audit_event(): void
+    {
+        $user = User::factory()->create();
+        $year = AcademicYear::query()->create([
+            'name' => '2026-2027',
+            'is_active' => true,
+        ]);
+        $learner = $this->createLearnerWithEnrollment($year, [
+            'lrn' => '109806170058',
+            'full_name' => 'STA. CRUZ, DAHLIA THERESE S.',
+            'normalized_name' => 'STA. CRUZ DAHLIA THERESE S',
+        ], 'L1');
+        $documentRequirement = DocumentRequirement::query()
+            ->whereHas('enrollment', fn ($query) => $query->where('learner_id', $learner->id))
+            ->where('document_type', DocumentType::Passport->value)
+            ->firstOrFail();
+
+        $this->actingAs($user)
+            ->patch("/learners/{$learner->id}/documents/{$documentRequirement->id}", [
+                'status' => DocumentStatus::Ok->value,
+                'expires_on' => '2031-08-01',
+                'notes' => 'Verified original passport copy.',
+            ])
+            ->assertRedirect("/learners/{$learner->id}");
+
+        $documentRequirement->refresh();
+        $this->assertSame(DocumentStatus::Ok, $documentRequirement->status);
+        $this->assertSame('2031-08-01', $documentRequirement->expires_on?->toDateString());
+        $this->assertSame('Verified original passport copy.', $documentRequirement->notes);
+        $this->assertDatabaseHas('audit_events', [
+            'actor_id' => $user->id,
+            'event_type' => 'document_requirement.updated',
+            'subject_type' => DocumentRequirement::class,
+            'subject_id' => $documentRequirement->id,
+        ]);
+
+        $auditEvent = AuditEvent::query()->firstOrFail();
+        $this->assertSame(DocumentStatus::Ok->value, $auditEvent->after['status']);
+        $this->assertSame('2031-08-01', $auditEvent->after['expires_on']);
+        $this->assertSame($learner->id, $auditEvent->metadata['learner_id']);
+    }
+
+    public function test_document_update_must_belong_to_learner(): void
+    {
+        $user = User::factory()->create();
+        $year = AcademicYear::query()->create([
+            'name' => '2026-2027',
+            'is_active' => true,
+        ]);
+        $learner = $this->createLearnerWithEnrollment($year, [
+            'lrn' => '109806170058',
+            'full_name' => 'STA. CRUZ, DAHLIA THERESE S.',
+            'normalized_name' => 'STA. CRUZ DAHLIA THERESE S',
+        ], 'L1');
+        $otherLearner = $this->createLearnerWithEnrollment($year, [
+            'lrn' => '411103250026',
+            'full_name' => 'JEYASEELAN, SAMUEL ZANE D.',
+            'normalized_name' => 'JEYASEELAN SAMUEL ZANE D',
+        ], 'G1');
+        $otherDocument = DocumentRequirement::query()
+            ->whereHas('enrollment', fn ($query) => $query->where('learner_id', $otherLearner->id))
+            ->firstOrFail();
+
+        $this->actingAs($user)
+            ->patch("/learners/{$learner->id}/documents/{$otherDocument->id}", [
+                'status' => DocumentStatus::Ok->value,
+            ])
+            ->assertNotFound();
     }
 
     /**
