@@ -38,14 +38,14 @@ class RegistrarSchemaTest extends TestCase
         $this->assertSame('varchar', $columns['father_contact_number']['type_name']);
     }
 
-    public function test_registrar_unique_indexes_exist(): void
+    public function test_registrar_indexes_exist(): void
     {
         $learnerIndexes = collect(Schema::getIndexes('learners'));
         $enrollmentIndexes = collect(Schema::getIndexes('enrollments'));
         $documentIndexes = collect(Schema::getIndexes('document_requirements'));
 
         $this->assertTrue($learnerIndexes->contains(
-            fn (array $index) => $index['unique'] === true && $index['columns'] === ['lrn']
+            fn (array $index) => $index['columns'] === ['lrn']
         ));
         $this->assertTrue($enrollmentIndexes->contains(
             fn (array $index) => $index['unique'] === true && $index['columns'] === ['learner_id', 'academic_year_id']

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('learners', function (Blueprint $table) {
             $table->id();
-            $table->string('lrn')->nullable()->unique();
+            $table->string('lrn')->nullable()->index();
             $table->string('full_name');
             $table->string('normalized_name')->index();
             $table->date('birth_date')->nullable();

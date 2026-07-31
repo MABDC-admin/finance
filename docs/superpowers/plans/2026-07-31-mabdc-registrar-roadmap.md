@@ -96,8 +96,8 @@ Core tables:
 - `audit_events`: before/after changes for imports and manual edits.
 
 Uniqueness rules:
-- `learners.lrn` is unique when not null.
-- Fallback duplicate detection uses normalized name plus birth date.
+- `learners.lrn` is indexed but not unique because the inspected 2026-2027 workbook contains duplicate LRNs assigned to different learners.
+- Duplicate detection uses LRN only when it matches the same learner identity; conflicting duplicate LRNs are preserved as separate learners and reported as import warnings. Blank-LRN fallback matching uses normalized name plus birth date.
 - `enrollments` is unique by `learner_id` plus `academic_year_id`.
 - `document_requirements` is unique by `enrollment_id` plus `document_type`.
 
@@ -433,7 +433,7 @@ Show learner identity, LRN, active enrollment, level, parent contacts, addresses
 
 - [ ] **Step 3: Write update validation test**
 
-Assert invalid dates, invalid gender, and duplicate LRN fail validation. Assert phone/contact strings are accepted without numeric conversion.
+Assert invalid dates and invalid gender fail validation. Assert duplicate LRN is allowed only with an explicit conflict warning path, and phone/contact strings are accepted without numeric conversion.
 
 - [ ] **Step 4: Implement edit form**
 
@@ -796,7 +796,7 @@ git commit -m "docs: add registrar deployment checklist"
 - A registrar can log in.
 - A registrar can import `MABDC 2026-2027.xlsx`.
 - Import creates 396 learner/enrollment records from the master sheet.
-- Import warnings expose blank LRN, missing contacts, missing UAE address, and malformed gender rows.
+- Import warnings expose blank LRN, duplicate LRN conflicts, missing contacts, missing UAE address, and malformed gender rows.
 - Dashboard shows total enrollment and missing document counts.
 - Learner directory supports search, level filter, and missing-document filter.
 - Learner profile shows demographics, contacts, addresses, enrollment, and document status.
