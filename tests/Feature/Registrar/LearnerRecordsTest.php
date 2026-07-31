@@ -1,0 +1,124 @@
+<?php
+
+namespace Tests\Feature\Registrar;
+
+use App\Enums\DocumentStatus;
+use App\Enums\DocumentType;
+use App\Models\AcademicYear;
+use App\Models\DocumentRequirement;
+use App\Models\Enrollment;
+use App\Models\Learner;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class LearnerRecordsTest extends TestCase
+{
+    use RefreshDatabase;
+
+    public function test_registrar_can_search_and_filter_learner_records(): void
+    {
+        $user = User::factory()->create();
+        $year = AcademicYear::query()->create([
+            'name' => '2026-2027',
+            'is_active' => true,
+        ]);
+        $match = $this->createLearnerWithEnrollment($year, [
+            'lrn' => '109806170058',
+            'full_name' => 'STA. CRUZ, DAHLIA THERESE S.',
+            'normalized_name' => 'STA. CRUZ DAHLIA THERESE S',
+            'gender' => 'F',
+            'mother_contact_number' => '052 564 1750',
+            'father_contact_number' => '056 205 1322',
+            'uae_address' => 'Abu Dhabi',
+        ], 'L1');
+        $this->createLearnerWithEnrollment($year, [
+            'lrn' => '411103250026',
+            'full_name' => 'JEYASEELAN, SAMUEL ZANE D.',
+            'normalized_name' => 'JEYASEELAN SAMUEL ZANE D',
+            'gender' => 'M',
+        ], 'G1');
+
+        $this->actingAs($user)
+            ->get('/learners?search=dahlia&level=L1&status=active')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Learners/Index')
+                ->where('filters.search', 'dahlia')
+                ->where('filters.level', 'L1')
+                ->where('filters.status', 'active')
+                ->where('learners.total', 1)
+                ->where('learners.data.0.id', $match->id)
+                ->where('learners.data.0.full_name', 'STA. CRUZ, DAHLIA THERESE S.')
+                ->where('learners.data.0.current_enrollment.level', 'L1')
+                ->where('learners.data.0.document_summary.ok', 5)
+                ->where('learners.data.0.document_summary.missing', 0)
+                ->has('levels', 2)
+            );
+    }
+
+    public function test_registrar_can_open_learner_profile_with_documents(): void
+    {
+        $user = User::factory()->create();
+        $year = AcademicYear::query()->create([
+            'name' => '2026-2027',
+            'is_active' => true,
+        ]);
+        $learner = $this->createLearnerWithEnrollment($year, [
+            'lrn' => '109806170058',
+            'full_name' => 'STA. CRUZ, DAHLIA THERESE S.',
+            'normalized_name' => 'STA. CRUZ DAHLIA THERESE S',
+            'birth_date' => '2020-11-15',
+            'gender' => 'F',
+            'mother_maiden_name' => 'Geralyn Soriano',
+            'mother_contact_number' => '052 564 1750',
+            'father_name' => 'Julius Sta. Cruz',
+            'father_contact_number' => '056 205 1322',
+            'philippine_address' => 'Pangasinan',
+            'uae_address' => 'Abu Dhabi',
+            'previous_school' => 'Previous Academy',
+        ], 'L1');
+        DocumentRequirement::query()
+            ->whereHas('enrollment', fn ($query) => $query->where('learner_id', $learner->id))
+            ->where('document_type', DocumentType::Passport->value)
+            ->update(['status' => DocumentStatus::Missing->value]);
+
+        $this->actingAs($user)
+            ->get("/learners/{$learner->id}")
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Learners/Show')
+                ->where('learner.full_name', 'STA. CRUZ, DAHLIA THERESE S.')
+                ->where('learner.current_enrollment.level', 'L1')
+                ->where('learner.document_summary.ok', 4)
+                ->where('learner.document_summary.missing', 1)
+                ->has('learner.document_requirements', 5)
+                ->where('learner.document_requirements.2.document_type', DocumentType::Passport->value)
+                ->where('learner.document_requirements.2.status', DocumentStatus::Missing->value)
+            );
+    }
+
+    /**
+     * @param  array<string, mixed>  $learnerAttributes
+     */
+    private function createLearnerWithEnrollment(AcademicYear $year, array $learnerAttributes, string $level): Learner
+    {
+        $learner = Learner::query()->create($learnerAttributes);
+        $enrollment = Enrollment::query()->create([
+            'academic_year_id' => $year->id,
+            'learner_id' => $learner->id,
+            'level' => $level,
+            'status' => 'active',
+        ]);
+
+        foreach (DocumentType::cases() as $documentType) {
+            DocumentRequirement::query()->create([
+                'enrollment_id' => $enrollment->id,
+                'document_type' => $documentType->value,
+                'status' => DocumentStatus::Ok->value,
+            ]);
+        }
+
+        return $learner;
+    }
+}
