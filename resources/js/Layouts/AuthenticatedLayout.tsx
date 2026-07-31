@@ -33,6 +33,12 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('imports.index')}
+                                    active={route().current('imports.*')}
+                                >
+                                    Imports
+                                </NavLink>
                             </div>
                         </div>
 
@@ -136,6 +142,12 @@ export default function Authenticated({
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('imports.index')}
+                            active={route().current('imports.*')}
+                        >
+                            Imports
                         </ResponsiveNavLink>
                     </div>
 
