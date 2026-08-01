@@ -96,19 +96,29 @@ export default function Receipt({ receipt }: any) {
                     <button
                         onClick={handleEmailReceipt}
                         disabled={sendingEmail}
-                        className="bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 disabled:opacity-50 font-extrabold py-2.5 px-6 rounded-2xl shadow-sm transition flex items-center gap-2"
+                        className={`font-extrabold py-2.5 px-6 rounded-2xl shadow-sm transition flex items-center gap-2 border-2 cursor-pointer
+                            ${emailSent
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                : 'bg-white text-indigo-600 border-indigo-600 hover:bg-indigo-50'
+                            }
+                            disabled:opacity-50
+                        `}
                     >
                         {sendingEmail ? (
                             <svg className="animate-spin w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                             </svg>
+                        ) : emailSent ? (
+                            <svg className="w-4 h-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
                         ) : (
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         )}
-                        {emailSent ? 'Resend Invoice Email' : 'Email Tax Invoice'}
+                        {emailSent ? 'Invoice Sent ✓ (Resend)' : 'Email Tax Invoice'}
                     </button>
                     <button
                         onClick={() => window.print()}
