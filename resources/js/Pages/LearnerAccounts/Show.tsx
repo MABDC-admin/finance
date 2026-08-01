@@ -136,7 +136,7 @@ export default function Show({ enrollment, emailedReceiptIds = [], statementSent
     };
 
     const getReceiptId = (item: any) => {
-        const match = item.description.match(/Receipt:\s*([^)]+)/);
+        const match = item.description.match(/Receipt:\s*([^|)]+)/);
         if (match && enrollment.receipts) {
             const rcptNum = match[1].trim();
             const receipt = enrollment.receipts.find((r: any) => r.receipt_number.trim() === rcptNum);
