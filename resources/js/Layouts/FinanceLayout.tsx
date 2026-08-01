@@ -61,13 +61,31 @@ function useFinanceNavItems() {
                 </svg>
             ),
         },
+        {
+            label: 'Audit Trail',
+            href: route('audit-trail.index'),
+            active: route().current('audit-trail.*') || route().current('audit-trail'),
+            icon: (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ),
+            moduleKey: 'audit_trail',
+        },
     ];
 }
 
 export default function FinanceLayout({ header, children }: FinanceLayoutProps) {
-    const navItems = useFinanceNavItems();
     const auth = usePage().props.auth;
     const user = auth.user;
+    const modulePermissions: any = auth.modulePermissions ?? {};
+
+    const navItems = useFinanceNavItems().filter(item => {
+        if (item.moduleKey) {
+            return modulePermissions[item.moduleKey] ?? false;
+        }
+        return true;
+    });
 
     const financeSidebar = (
         <aside className="ops-sidebar hidden sticky top-0 h-screen overflow-y-auto bg-[#005f3d] px-4 py-6 text-emerald-100 shadow-2xl lg:block no-scrollbar">

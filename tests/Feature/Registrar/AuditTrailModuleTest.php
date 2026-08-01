@@ -36,10 +36,16 @@ class AuditTrailModuleTest extends TestCase
             ->assertSuccessful()
             ->assertInertia(fn ($page) => $page->component('AuditTrail/Index'));
 
-        // Non-admins (registrars) are forbidden
+        // Registrars can successfully access the page (enabled by default)
         $this->actingAs($registrar)
             ->get('/audit-trail')
-            ->assertForbidden();
+            ->assertSuccessful();
+
+        // Finance users can successfully access the page (enabled by default)
+        $finance = User::factory()->create(['role' => 'finance']);
+        $this->actingAs($finance)
+            ->get('/audit-trail')
+            ->assertSuccessful();
 
         // Standard users are forbidden
         $this->actingAs($plainUser)
