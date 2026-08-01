@@ -17,6 +17,7 @@ class Enrollment extends Model
         'section_id',
         'level',
         'status',
+        'financial_status',
         'session',
         'enrolled_on',
         'metadata',
@@ -48,5 +49,25 @@ class Enrollment extends Model
     public function documentRequirements(): HasMany
     {
         return $this->hasMany(DocumentRequirement::class);
+    }
+
+    public function financeLedgers(): HasMany
+    {
+        return $this->hasMany(FinanceLedger::class);
+    }
+
+    public function installmentPlans(): HasMany
+    {
+        return $this->hasMany(InstallmentPlan::class);
+    }
+
+    public function grades(): HasMany
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    public function receipts()
+    {
+        return $this->hasManyThrough(Receipt::class, Payment::class);
     }
 }

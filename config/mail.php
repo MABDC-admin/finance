@@ -97,6 +97,14 @@ return [
             'retry_after' => 60,
         ],
 
+        'mabdc-api' => [
+            'transport'    => 'mabdc-api',
+            'api_key'      => env('MABDC_MAIL_API_KEY'),
+            'api_url'      => env('MABDC_MAIL_API_URL', 'https://api-mail.mabdc.com/v1/emails'),
+            'from_address' => env('MAIL_FROM_ADDRESS', 'noreply@mabdc.org'),
+            'from_name'    => env('MAIL_FROM_NAME', 'MABDC School'),
+        ],
+
     ],
 
     /*
