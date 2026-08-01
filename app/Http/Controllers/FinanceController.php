@@ -219,6 +219,7 @@ class FinanceController extends Controller
             'method' => 'required|string',
             'receipt_number' => 'required|string|unique:receipts,receipt_number',
             'transaction_date' => 'required|date',
+            'reference_number' => 'nullable|string|max:255',
         ]);
 
         // 1. Create the formal Payment record
@@ -226,6 +227,7 @@ class FinanceController extends Controller
             'enrollment_id' => $enrollment->id,
             'amount' => $validated['amount'],
             'payment_method' => $validated['method'],
+            'reference_number' => $request->input('reference_number'),
             'transaction_date' => $validated['transaction_date'],
             'processed_by' => auth()->id(),
             'status' => 'completed',
@@ -239,9 +241,10 @@ class FinanceController extends Controller
         ]);
 
         // 3. Create Ledger Entry
+        $refString = $request->filled('reference_number') ? ' | Ref: ' . $request->input('reference_number') : '';
         $enrollment->financeLedgers()->create([
             'type' => 'payment',
-            'description' => 'Payment via ' . $validated['method'] . ' (Receipt: ' . $validated['receipt_number'] . ')',
+            'description' => 'Payment via ' . $validated['method'] . ' (Receipt: ' . $validated['receipt_number'] . $refString . ')',
             'amount' => -$validated['amount'], // Negative for payments
             'transaction_date' => $validated['transaction_date'],
         ]);
@@ -254,14 +257,16 @@ class FinanceController extends Controller
             'subject_id' => $payment->id,
             'before' => null,
             'after' => [
+                'type' => 'payment',
                 'amount' => $validated['amount'],
-                'payment_method' => $validated['method'],
+                'method' => $validated['method'],
                 'receipt_number' => $validated['receipt_number'],
+                'reference_number' => $request->input('reference_number'),
                 'transaction_date' => $validated['transaction_date'],
             ],
             'metadata' => [
                 'learner_name' => optional($enrollment->learner)->full_name,
-                'message' => 'Payment of AED ' . number_format($validated['amount'], 2) . ' recorded via ' . $validated['method'] . ' (Receipt: ' . $validated['receipt_number'] . ')',
+                'message' => 'Payment of AED ' . number_format($validated['amount'], 2) . ' recorded via ' . $validated['method'] . ' (Receipt: ' . $validated['receipt_number'] . ($request->filled('reference_number') ? ', Ref: ' . $request->input('reference_number') : '') . ')',
             ],
         ]);
 

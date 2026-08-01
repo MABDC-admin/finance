@@ -88,6 +88,7 @@ export default function Show({ enrollment, emailedReceiptIds = [], statementSent
         description: '', // for charges
         method: 'Cash', // for payments
         receipt_number: '', // for payments
+        reference_number: '', // for payments (optional)
         type: 'Employee Discount (50%)', // for discounts
         discount_mode: 'fixed', // for discounts: 'fixed' or 'percent'
         percent: '', // for discounts
@@ -777,6 +778,23 @@ export default function Show({ enrollment, emailedReceiptIds = [], statementSent
                                     </select>
                                     <InputError message={errors.method} className="mt-2" />
                                 </div>
+                                {data.method !== 'Cash' && (
+                                    <div>
+                                        <InputLabel htmlFor="reference_number" value="Reference Number (Optional)" />
+                                        <TextInput
+                                            id="reference_number"
+                                            type="text"
+                                            className="mt-1 block w-full text-slate-900"
+                                            value={data.reference_number || ''}
+                                            onChange={(e) => setData('reference_number', e.target.value)}
+                                            placeholder="e.g. Bank ref, check number, transaction ID"
+                                        />
+                                        <p className="text-xs text-slate-400 font-semibold mt-1">
+                                            Please enter the bank transaction ID, transfer reference, check number, or card approval code.
+                                        </p>
+                                        <InputError message={(errors as any).reference_number} className="mt-2" />
+                                    </div>
+                                )}
                             </div>
                         )}
 

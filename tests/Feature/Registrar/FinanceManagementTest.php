@@ -194,4 +194,78 @@ class FinanceManagementTest extends TestCase
             ->get('/finance/reports/export-collections');
         $responseCollections->assertOk();
     }
+
+    public function test_admin_can_record_payment_with_optional_reference_number(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $year = AcademicYear::query()->create([
+            'name' => '2026-2027',
+            'is_active' => true,
+        ]);
+
+        $learner = Learner::query()->create([
+            'lrn' => '109806170058',
+            'full_name' => 'STA. CRUZ, DAHLIA THERESE S.',
+            'normalized_name' => 'STA CRUZ DAHLIA THERESE S',
+        ]);
+        $enrollment = Enrollment::query()->create([
+            'academic_year_id' => $year->id,
+            'learner_id' => $learner->id,
+            'level' => 'G1',
+            'status' => 'active',
+            'financial_status' => 'Unpaid',
+        ]);
+
+        // Record a Cash payment (no reference number)
+        $response = $this->actingAs($admin)
+            ->post("/learner-accounts/{$enrollment->id}/payment", [
+                'amount' => 500,
+                'method' => 'Cash',
+                'receipt_number' => 'REC-1111',
+                'transaction_date' => now()->format('Y-m-d'),
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('payments', [
+            'enrollment_id' => $enrollment->id,
+            'payment_method' => 'Cash',
+            'amount' => 500,
+            'reference_number' => null,
+        ]);
+        $this->assertDatabaseHas('finance_ledgers', [
+            'enrollment_id' => $enrollment->id,
+            'type' => 'payment',
+            'description' => 'Payment via Cash (Receipt: REC-1111)',
+            'amount' => -500,
+        ]);
+
+        // Record a Bank Transfer payment (with reference number)
+        $response = $this->actingAs($admin)
+            ->post("/learner-accounts/{$enrollment->id}/payment", [
+                'amount' => 1200,
+                'method' => 'Bank Transfer',
+                'receipt_number' => 'REC-2222',
+                'reference_number' => 'TXN-BANK-998877',
+                'transaction_date' => now()->format('Y-m-d'),
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('payments', [
+            'enrollment_id' => $enrollment->id,
+            'payment_method' => 'Bank Transfer',
+            'amount' => 1200,
+            'reference_number' => 'TXN-BANK-998877',
+        ]);
+        $this->assertDatabaseHas('finance_ledgers', [
+            'enrollment_id' => $enrollment->id,
+            'type' => 'payment',
+            'description' => 'Payment via Bank Transfer (Receipt: REC-2222 | Ref: TXN-BANK-998877)',
+            'amount' => -1200,
+        ]);
+
+        $this->assertDatabaseHas('audit_events', [
+            'event_type' => 'payment_recorded',
+            'subject_type' => \App\Models\Payment::class,
+        ]);
+    }
 }
