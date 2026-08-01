@@ -59,7 +59,7 @@ export default function Authenticated({
             icon: <DashboardIcon />,
         },
         {
-            moduleKey: 'learner_management',
+            moduleKey: 'student_management',
             label: 'Learner Management',
             href: route('learners.index'),
             active: route().current('learners.*'),
