@@ -116,7 +116,7 @@ export default function FinanceLayout({ header, children }: FinanceLayoutProps) 
                         className={[
                             'flex w-full items-center gap-4 rounded-xl px-4 py-4 text-left text-sm font-bold transition duration-300',
                             item.active
-                                ? 'bg-white/15 text-white shadow-glow ring-1 ring-white/20'
+                                ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-glow ring-1 ring-white/10'
                                 : 'text-emerald-100/70 hover:bg-white/5 hover:text-white',
                         ].join(' ')}
                     >

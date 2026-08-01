@@ -436,7 +436,7 @@ function SidebarEntry({
                     className={
                         'flex w-full items-center gap-4 rounded-xl px-4 py-4 text-left text-sm font-bold transition duration-300 ' +
                         (item.active
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-glow ring-1 ring-white/10'
+                            ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-glow ring-1 ring-white/10'
                             : 'text-slate-400 hover:bg-white/5 hover:text-white')
                     }
                 >
@@ -483,7 +483,7 @@ function SidebarLink({ item }: { item: NavItem }) {
             className={
                 'flex w-full items-center gap-4 rounded-xl px-4 py-4 text-left text-sm font-bold transition duration-300 ' +
                 (item.active
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-glow ring-1 ring-white/10'
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-glow ring-1 ring-white/10'
                     : 'text-slate-400 hover:bg-white/5 hover:text-white')
             }
         >
@@ -516,14 +516,14 @@ function SidebarSubNav({ items }: { items: NavSubItem[] }) {
                         className={
                             'group flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs font-bold transition duration-200 ' +
                             (item.active
-                                ? 'bg-white/10 text-white shadow-sm ring-1 ring-white/20'
+                                ? 'bg-amber-500/15 text-amber-200 shadow-sm ring-1 ring-amber-500/30'
                                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-200')
                         }
                     >
                         <span
                             className={
                                 'h-1.5 w-1.5 rounded-full transition-colors ' +
-                                (item.active ? 'bg-emerald-400 shadow-glow' : 'bg-slate-600 group-hover:bg-slate-400')
+                                (item.active ? 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-slate-600 group-hover:bg-slate-400')
                             }
                         />
                         <span className="min-w-0 flex-1 truncate">
