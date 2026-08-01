@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, router } from '@inertiajs/react';
+import FinanceLayout from '@/Layouts/FinanceLayout';
+import { Head, router, usePage } from '@inertiajs/react';
 
 interface AuditEvent {
     id: number;
@@ -35,6 +36,10 @@ interface IndexProps {
 }
 
 export default function Index({ events, filters, eventTypes }: IndexProps) {
+    const auth = usePage().props.auth;
+    const user = auth.user;
+    const isFinance = user.role === 'finance';
+
     const [search, setSearch] = useState(filters.search || '');
     const [eventType, setEventType] = useState(filters.event_type || '');
     const [date, setDate] = useState(filters.date || '');
@@ -114,8 +119,8 @@ export default function Index({ events, filters, eventTypes }: IndexProps) {
             .join(' ');
     };
 
-    return (
-        <AuthenticatedLayout>
+    const content = (
+        <>
             <Head title="System Audit Trail" />
 
             <div className="py-12 px-4 sm:px-6 lg:px-8 space-y-6">
@@ -351,6 +356,12 @@ export default function Index({ events, filters, eventTypes }: IndexProps) {
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </>
     );
+
+    if (isFinance) {
+        return <FinanceLayout>{content}</FinanceLayout>;
+    }
+
+    return <AuthenticatedLayout>{content}</AuthenticatedLayout>;
 }
