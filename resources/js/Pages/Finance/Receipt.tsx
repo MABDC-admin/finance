@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 function amountToWords(amount: number): string {
     const num = Math.floor(amount);
@@ -33,6 +33,9 @@ function amountToWords(amount: number): string {
 }
 
 export default function Receipt({ receipt }: any) {
+    const [sendingEmail, setSendingEmail] = React.useState(false);
+    const [emailSent, setEmailSent] = React.useState(false);
+
     const payment = receipt.payment;
     const enrollment = payment.enrollment;
     const learner = enrollment.learner;
@@ -58,6 +61,25 @@ export default function Receipt({ receipt }: any) {
         return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
     };
 
+    const handleEmailReceipt = () => {
+        const effectiveEmail = enrollment.receipt_email ||
+            [learner?.mother_email, learner?.father_email].filter(Boolean)[0];
+        if (!effectiveEmail) {
+            alert('No email configured for this student. Please configure one on the Student Ledger page.');
+            return;
+        }
+
+        setSendingEmail(true);
+        router.post(route('finance.receipt.email', receipt.id), {}, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setEmailSent(true);
+                alert(`Tax Invoice emailed successfully to ${effectiveEmail}!`);
+            },
+            onFinish: () => setSendingEmail(false),
+        });
+    };
+
     return (
         <div className="min-h-screen bg-slate-100 flex flex-col items-center py-8 px-4 print:p-0 print:bg-white print:min-h-0">
             <Head title={`Tax Invoice - ${receipt.receipt_number}`} />
@@ -70,12 +92,31 @@ export default function Receipt({ receipt }: any) {
                 >
                     &larr; Back to Student Ledger
                 </Link>
-                <button
-                    onClick={() => window.print()}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-6 rounded-2xl shadow-sm transition"
-                >
-                    Print Tax Invoice
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={handleEmailReceipt}
+                        disabled={sendingEmail}
+                        className="bg-white border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 disabled:opacity-50 font-extrabold py-2.5 px-6 rounded-2xl shadow-sm transition flex items-center gap-2"
+                    >
+                        {sendingEmail ? (
+                            <svg className="animate-spin w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                        ) : (
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        )}
+                        {emailSent ? 'Resend Invoice Email' : 'Email Tax Invoice'}
+                    </button>
+                    <button
+                        onClick={() => window.print()}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-6 rounded-2xl shadow-sm transition"
+                    >
+                        Print Tax Invoice
+                    </button>
+                </div>
             </div>
 
             {/* Invoice Sheet */}
