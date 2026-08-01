@@ -191,7 +191,12 @@
         </td>
         <td class="meta-cell">
             <span class="meta-label" style="display:inline-block;width:120px;">Mode/Terms of Payment:</span>
-            <span class="meta-value" style="text-transform:uppercase;">{{ $payment->payment_method }}</span>
+            <span class="meta-value" style="text-transform:uppercase;">
+                {{ $payment->payment_method }}
+                @if(!empty($payment->reference_number))
+                    (REF: {{ $payment->reference_number }})
+                @endif
+            </span>
         </td>
     </tr>
 </table>

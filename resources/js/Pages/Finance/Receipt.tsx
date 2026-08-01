@@ -169,7 +169,10 @@ export default function Receipt({ receipt }: any) {
                         </div>
                         <div className="flex border-b border-slate-200 pb-1.5 items-center">
                             <span className="font-bold text-slate-800 shrink-0 w-48">Mode/Terms of Payment:</span>
-                            <span className="font-bold text-slate-955 uppercase">{payment.payment_method}</span>
+                            <span className="font-bold text-slate-955 uppercase">
+                                {payment.payment_method}
+                                {payment.reference_number && ` (REF: ${payment.reference_number})`}
+                            </span>
                         </div>
                     </div>
 

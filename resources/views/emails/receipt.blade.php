@@ -83,6 +83,12 @@
                         <td style="padding: 5px 0; font-weight:bold;">Payment Method:</td>
                         <td style="padding: 5px 0; text-align:right; text-transform:uppercase;">{{ $payment->payment_method }}</td>
                     </tr>
+                    @if(!empty($payment->reference_number))
+                    <tr style="font-size:14px; color:#475569;">
+                        <td style="padding: 5px 0; font-weight:bold;">Reference Number:</td>
+                        <td style="padding: 5px 0; text-align:right;">{{ $payment->reference_number }}</td>
+                    </tr>
+                    @endif
                     <tr style="font-size:14px; color:#475569; border-top: 1px dashed #e2e8f0; padding-top: 5px;">
                         <td style="padding: 8px 0; font-weight:bold; color:#166534;">Amount Paid:</td>
                         <td style="padding: 8px 0; text-align:right; font-weight:bold; color:#166534;">{{ number_format($totalAmount, 2) }} AED</td>
