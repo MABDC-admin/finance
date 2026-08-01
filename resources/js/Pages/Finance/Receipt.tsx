@@ -62,7 +62,7 @@ export default function Receipt({ receipt }: any) {
     };
 
     const handleEmailReceipt = () => {
-        const effectiveEmail = enrollment.receipt_email ||
+        const effectiveEmail = learner?.receipt_email ||
             [learner?.mother_email, learner?.father_email].filter(Boolean)[0];
         if (!effectiveEmail) {
             alert('No email configured for this student. Please configure one on the Student Ledger page.');
