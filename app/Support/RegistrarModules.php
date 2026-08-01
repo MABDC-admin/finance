@@ -26,6 +26,7 @@ class RegistrarModules
             ['key' => 'reports', 'label' => 'Reports', 'route' => 'reports.index', 'implemented' => true],
             ['key' => 'document_center', 'label' => 'Document Center', 'route' => 'imports.index', 'implemented' => true],
             ['key' => 'settings', 'label' => 'Settings', 'route' => 'profile.edit', 'implemented' => true],
+            ['key' => 'audit_trail', 'label' => 'Audit Trail', 'route' => 'audit-trail.index', 'implemented' => true, 'admin_only' => true],
         ];
     }
 

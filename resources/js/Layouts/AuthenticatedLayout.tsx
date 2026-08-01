@@ -151,11 +151,23 @@ export default function Authenticated({
             soon: true,
         },
         {
-            moduleKey: 'user_access',
-            label: 'User Access & Audit Trail',
+            moduleKey: 'staff_management',
+            label: 'Staff Management',
             href: isAdmin ? route('users.index') : '#',
-            active: route().current('users.*') || route().current('profile.*'),
+            active: route().current('users.*'),
             icon: <SecurityIcon />,
+            adminOnly: true,
+        },
+        {
+            moduleKey: 'audit_trail',
+            label: 'Audit Trail',
+            href: isAdmin ? route('audit-trail.index') : '#',
+            active: route().current('audit-trail.*'),
+            icon: (
+                <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ),
             adminOnly: true,
         },
     ] as NavItem[]).filter((item) => {
