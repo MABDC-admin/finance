@@ -118,6 +118,41 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
         };
     };
 
+    const getSectionStyle = (session: string, isTargetOver: boolean) => {
+        const s = session.toLowerCase().trim();
+        if (s === 'morning') {
+            return {
+                container: isTargetOver 
+                    ? 'border-amber-500 bg-amber-50/20 ring-4 ring-amber-500/10 scale-[1.01]' 
+                    : 'border-amber-200/50 bg-amber-50/5 shadow-sm hover:shadow-md hover:border-amber-300/80',
+                badge: 'bg-amber-100/70 text-amber-800 border-amber-200/50',
+                headerText: 'text-amber-950',
+                dropBg: 'bg-amber-50/30 border-amber-200/40',
+                countBadge: 'bg-amber-100 text-amber-900 border-amber-200/50 border'
+            };
+        }
+        if (s === 'afternoon') {
+            return {
+                container: isTargetOver 
+                    ? 'border-indigo-500 bg-indigo-50/20 ring-4 ring-indigo-500/10 scale-[1.01]' 
+                    : 'border-indigo-200/50 bg-indigo-50/5 shadow-sm hover:shadow-md hover:border-indigo-300/80',
+                badge: 'bg-indigo-100/70 text-indigo-800 border-indigo-200/50',
+                headerText: 'text-indigo-950',
+                dropBg: 'bg-indigo-50/30 border-indigo-200/40',
+                countBadge: 'bg-indigo-100 text-indigo-900 border-indigo-200/50 border'
+            };
+        }
+        return {
+            container: isTargetOver 
+                ? 'border-emerald-500 bg-emerald-50/20 ring-4 ring-emerald-500/10 scale-[1.01]' 
+                : 'border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-slate-350',
+            badge: 'bg-emerald-100/70 text-emerald-850 border-emerald-200/50',
+            headerText: 'text-slate-900',
+            dropBg: 'bg-slate-50/50 border-slate-200/80',
+            countBadge: 'bg-emerald-100 text-emerald-900 border-emerald-200/50 border'
+        };
+    };
+
     const uniqueLevels = Array.from(new Set([
         ...sections.map(s => s.level),
         ...enrollments.map(e => e.level)
@@ -507,27 +542,21 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                         .sort((a, b) => a.learner.full_name.localeCompare(b.learner.full_name));
                                     const isTargetOver = dragOverColumn === `section-${section.id}`;
                                     
+                                    const style = getSectionStyle(section.session, isTargetOver);
+
                                     return (
                                         <div 
                                             key={section.id}
                                             onDragOver={(e) => handleDragOver(e, `section-${section.id}`)}
                                             onDragLeave={handleDragLeave}
                                             onDrop={(e) => handleDrop(e, section.id)}
-                                            className={`flex-none w-[480px] bg-white rounded-2xl border p-5 flex flex-col transition-all duration-200 ${
-                                                isTargetOver 
-                                                    ? 'border-emerald-500 bg-emerald-50/20 ring-4 ring-emerald-500/10 scale-[1.01]' 
-                                                    : 'border-slate-200 shadow-sm'
-                                            }`}
+                                            className={`flex-none w-[480px] rounded-2xl border p-5 flex flex-col transition-all duration-200 ${style.container}`}
                                         >
-                                            <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-100">
+                                            <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-150/40">
                                                 <div>
-                                                    <h3 className="font-black text-slate-955 text-sm tracking-tight uppercase">Section {section.name}</h3>
+                                                    <h3 className={`font-black text-sm tracking-tight uppercase ${style.headerText}`}>Section {section.name}</h3>
                                                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
-                                                        <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${
-                                                            section.session === 'morning' ? 'bg-amber-50 text-amber-700 border-amber-205/60' :
-                                                            section.session === 'afternoon' ? 'bg-indigo-50 text-indigo-700 border-indigo-205/60' :
-                                                            'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                                                        }`}>
+                                                        <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${style.badge}`}>
                                                             {section.session}
                                                         </span>
                                                         <span className="text-[10px] font-bold text-slate-400 truncate max-w-[150px]" title={section.teacher_name || 'TBA'}>
@@ -535,13 +564,13 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <span className="bg-emerald-50 text-emerald-800 border border-emerald-100 px-2.5 py-0.5 rounded-full text-xs font-black">
+                                                <span className={`${style.countBadge} px-2.5 py-0.5 rounded-full text-xs font-black`}>
                                                     {sectionEnrollments.length}
                                                 </span>
                                             </div>
 
                                             {/* Drop Area */}
-                                            <div className="flex-1 space-y-1 bg-slate-50/50 p-2 rounded-xl border border-dashed border-slate-200/80 pr-1.5">
+                                            <div className={`flex-1 space-y-1 p-2 rounded-xl border border-dashed pr-1.5 ${style.dropBg}`}>
                                                 {sectionEnrollments.map(e => {
                                                     const names = e.learner.full_name.split(',');
                                                     const lastName = names[0]?.trim() || '';
