@@ -61,26 +61,32 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
         'KINDER': 2,
         'KINDERGARTEN': 2,
         'PRE-SCHOOL': 3,
-        'L1': 11,
-        'L2': 12,
-        'L3': 13,
-        'L4': 14,
-        'L5': 15,
-        'L6': 16,
-        'L7': 17,
-        'L8': 18,
-        'L9': 19,
-        'L10': 20,
-        'L11': 21,
-        'L12': 22,
+        'L1': 4,       // Level 1
+        'L2': 5,       // Level 2
+        'G1': 11,      // Grade 1
+        'G2': 12,      // Grade 2
+        'G3': 13,      // Grade 3
+        'G4': 14,
+        'G5': 15,
+        'G6': 16,
+        'G7': 17,
+        'G8': 18,
+        'G9': 19,
+        'G10': 20,
+        'G11': 21,
+        'G12': 22,
     };
 
     const getLevelPriority = (level: string) => {
         const key = level.toUpperCase().trim();
         if (levelOrder[key] !== undefined) return levelOrder[key];
-        const match = key.match(/^L(\d+)$/);
-        if (match) {
-            return 10 + parseInt(match[1], 10);
+        const matchL = key.match(/^L(\d+)$/);
+        if (matchL) {
+            return parseInt(matchL[1], 10);
+        }
+        const matchG = key.match(/^G(\d+)$/);
+        if (matchG) {
+            return 10 + parseInt(matchG[1], 10);
         }
         return 999;
     };
@@ -343,21 +349,23 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                     {viewMode === 'board' && (
                         <div className="space-y-6">
                             {/* Grade Selector Row */}
-                            <div className="flex flex-wrap items-center gap-2.5 pb-5 border-b border-slate-200">
-                                <span className="text-xs font-black text-slate-400 uppercase tracking-widest mr-2">Grade Level Filter:</span>
-                                {uniqueLevels.map(level => (
-                                    <button 
-                                        key={level}
-                                        onClick={() => setSelectedLevel(level)}
-                                        className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-150 ${
-                                            selectedLevel === level 
-                                                ? 'bg-[#005f3d] text-white shadow-md' 
-                                                : 'bg-white hover:bg-slate-55 text-slate-600 border border-slate-200 shadow-sm'
-                                        }`}
-                                    >
-                                        {level}
-                                    </button>
-                                ))}
+                            <div className="flex items-center gap-2.5 pb-4 border-b border-slate-200 overflow-x-auto custom-scroll flex-nowrap w-full">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2 flex-none">Grade Level Filter:</span>
+                                <div className="flex items-center gap-1.5 flex-nowrap">
+                                    {uniqueLevels.map(level => (
+                                        <button 
+                                            key={level}
+                                            onClick={() => setSelectedLevel(level)}
+                                            className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-150 flex-none ${
+                                                selectedLevel === level 
+                                                    ? 'bg-[#005f3d] text-white shadow-sm' 
+                                                    : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
+                                            }`}
+                                        >
+                                            {level}
+                                        </button>
+                                    ))}
+                                </div>
                                 {uniqueLevels.length === 0 && (
                                     <span className="text-sm font-medium text-slate-500">No student enrollments found.</span>
                                 )}
