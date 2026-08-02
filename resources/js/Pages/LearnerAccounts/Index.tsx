@@ -190,7 +190,7 @@ export default function Index({ enrollments, levels = [], filters }: any) {
                                             {/* LRN */}
                                             <td className="px-6 py-3.5 whitespace-nowrap">
                                                 <span className="text-xs font-mono font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-md">
-                                                    {e.lrn}
+                                                    {e.lrn || 'Pending'}
                                                 </span>
                                             </td>
 
