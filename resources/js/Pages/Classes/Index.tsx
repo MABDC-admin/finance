@@ -550,9 +550,32 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             onDragOver={(e) => handleDragOver(e, `section-${section.id}`)}
                                             onDragLeave={handleDragLeave}
                                             onDrop={(e) => handleDrop(e, section.id)}
-                                            className={`flex-none w-[480px] rounded-2xl border p-5 flex flex-col transition-all duration-200 ${style.container}`}
+                                            className={`flex-none w-[480px] rounded-2xl border p-5 flex flex-col transition-all duration-200 relative overflow-hidden ${style.container}`}
                                         >
-                                            <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-150/40">
+                                            {/* Design Vector: Top session gradient bar */}
+                                            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${
+                                                section.session === 'morning' ? 'from-amber-400 via-amber-500 to-orange-500' :
+                                                section.session === 'afternoon' ? 'from-indigo-500 via-indigo-650 to-purple-650' :
+                                                'from-emerald-450 to-teal-500'
+                                            }`} />
+
+                                            {/* Design Vector: Dotted grid backdrop */}
+                                            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.08] pointer-events-none" />
+
+                                            {/* Design Vector: Faint session watermark background */}
+                                            <div className="absolute -right-4 -bottom-4 text-slate-400 opacity-[0.05] pointer-events-none select-none">
+                                                {section.session === 'morning' ? (
+                                                    <svg className="w-28 h-28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="0.8">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="w-28 h-28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="0.8">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                                    </svg>
+                                                )}
+                                            </div>
+
+                                            <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-150/40 relative z-10">
                                                 <div>
                                                     <h3 className={`font-black text-sm tracking-tight uppercase ${style.headerText}`}>Section {section.name}</h3>
                                                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
