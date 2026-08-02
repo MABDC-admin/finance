@@ -552,25 +552,53 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             onDrop={(e) => handleDrop(e, section.id)}
                                             className={`flex-none w-[480px] rounded-2xl border p-5 flex flex-col transition-all duration-200 relative overflow-hidden ${style.container}`}
                                         >
-                                            {/* Design Vector: Top session gradient bar */}
-                                            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${
-                                                section.session === 'morning' ? 'from-amber-400 via-amber-500 to-orange-500' :
-                                                section.session === 'afternoon' ? 'from-indigo-500 via-indigo-650 to-purple-650' :
-                                                'from-emerald-450 to-teal-500'
+                                            {/* Deco: Left-side gradient ribbon */}
+                                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-gradient-to-b ${
+                                                section.session === 'morning' ? 'from-amber-400 via-orange-500 to-rose-500' :
+                                                section.session === 'afternoon' ? 'from-indigo-400 via-purple-500 to-fuchsia-500' :
+                                                'from-emerald-400 via-teal-500 to-cyan-500'
                                             }`} />
 
-                                            {/* Design Vector: Dotted grid backdrop */}
-                                            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.08] pointer-events-none" />
+                                            {/* Deco: Top-right corner geometric orb */}
+                                            <div className={`absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-[0.07] pointer-events-none ${
+                                                section.session === 'morning' ? 'bg-amber-500' :
+                                                section.session === 'afternoon' ? 'bg-indigo-500' :
+                                                'bg-emerald-500'
+                                            }`} />
+                                            <div className={`absolute -top-3 -right-3 w-10 h-10 rounded-full opacity-[0.05] pointer-events-none border-2 ${
+                                                section.session === 'morning' ? 'border-amber-400' :
+                                                section.session === 'afternoon' ? 'border-indigo-400' :
+                                                'border-emerald-400'
+                                            }`} />
 
-                                            {/* Design Vector: Faint session watermark background */}
-                                            <div className="absolute -right-4 -bottom-4 text-slate-400 opacity-[0.05] pointer-events-none select-none">
+                                            {/* Deco: Bottom-left diagonal stripes */}
+                                            <div className="absolute -bottom-6 -left-6 w-20 h-20 opacity-[0.04] pointer-events-none"
+                                                style={{
+                                                    backgroundImage: `repeating-linear-gradient(
+                                                        45deg,
+                                                        ${section.session === 'morning' ? '#f59e0b' : section.session === 'afternoon' ? '#6366f1' : '#10b981'},
+                                                        ${section.session === 'morning' ? '#f59e0b' : section.session === 'afternoon' ? '#6366f1' : '#10b981'} 2px,
+                                                        transparent 2px,
+                                                        transparent 8px
+                                                    )`
+                                                }}
+                                            />
+
+                                            {/* Deco: Bottom-right session icon badge */}
+                                            <div className={`absolute bottom-3 right-3 opacity-[0.06] pointer-events-none select-none`}>
                                                 {section.session === 'morning' ? (
-                                                    <svg className="w-28 h-28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="0.8">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                                                    <svg className="w-14 h-14 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zm11.394-5.834a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z" />
+                                                    </svg>
+                                                ) : section.session === 'afternoon' ? (
+                                                    <svg className="w-14 h-14 text-indigo-500" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path fillRule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z" clipRule="evenodd" />
                                                     </svg>
                                                 ) : (
-                                                    <svg className="w-28 h-28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="0.8">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                                                    <svg className="w-14 h-14 text-emerald-500" viewBox="0 0 24 24" fill="currentColor">
+                                                        <path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
+                                                        <path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+                                                        <path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
                                                     </svg>
                                                 )}
                                             </div>
