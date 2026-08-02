@@ -38,6 +38,10 @@ export default function Transfers({ auth, enrollments, activeEnrollments }: Page
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState<'all' | 'transferred' | 'withdrawn'>('all');
     
+    // Custom searchable selector states
+    const [searchStudentTerm, setSearchStudentTerm] = useState('');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
     const { data, setData, post, processing, errors, reset } = useForm({
         enrollment_id: '',
         type: 'transferred',
@@ -51,9 +55,23 @@ export default function Transfers({ auth, enrollments, activeEnrollments }: Page
             onSuccess: () => {
                 setIsModalOpen(false);
                 reset();
+                setSearchStudentTerm('');
             }
         });
     };
+
+    // Selected student details
+    const selectedStudent = useMemo(() => {
+        return activeEnrollments.find(e => e.id.toString() === data.enrollment_id);
+    }, [activeEnrollments, data.enrollment_id]);
+
+    // Filter active student list for searchable dropdown selection
+    const filteredActiveEnrollments = useMemo(() => {
+        if (!searchStudentTerm) return activeEnrollments;
+        return activeEnrollments.filter(e => 
+            e.learner?.full_name.toLowerCase().includes(searchStudentTerm.toLowerCase())
+        );
+    }, [activeEnrollments, searchStudentTerm]);
 
     // Filtered history list
     const filteredEnrollments = useMemo(() => {
@@ -263,22 +281,64 @@ export default function Transfers({ auth, enrollments, activeEnrollments }: Page
                     </div>
                     
                     <div className="grid gap-5">
-                        <div>
-                            <InputLabel htmlFor="enrollment_id" value="Select Active Student" />
-                            <select
-                                id="enrollment_id"
-                                value={data.enrollment_id}
-                                onChange={e => setData('enrollment_id', e.target.value)}
-                                className="mt-1 block w-full rounded-lg border-slate-200 text-xs font-black uppercase focus:ring-emerald-500 focus:border-emerald-500 shadow-sm"
-                                required
-                            >
-                                <option value="">Select Student</option>
-                                {activeEnrollments.map(enrollment => (
-                                    <option key={enrollment.id} value={enrollment.id}>
-                                        {enrollment.learner?.full_name} ({enrollment.level} • {enrollment.section?.name || 'No Section'})
-                                    </option>
-                                ))}
-                            </select>
+                        <div className="relative">
+                            <InputLabel htmlFor="enrollment_id_search" value="Select Active Student" />
+                            <div className="relative">
+                                <input
+                                    id="enrollment_id_search"
+                                    type="text"
+                                    placeholder={selectedStudent ? selectedStudent.learner.full_name : "Type student name to search..."}
+                                    value={searchStudentTerm}
+                                    onChange={(e) => {
+                                        setSearchStudentTerm(e.target.value);
+                                        setIsDropdownOpen(true);
+                                    }}
+                                    onFocus={() => setIsDropdownOpen(true)}
+                                    className="mt-1 block w-full rounded-lg border-slate-200 text-xs font-bold uppercase focus:ring-emerald-500 focus:border-emerald-500 shadow-sm pr-10"
+                                />
+                                {selectedStudent && (
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            setData('enrollment_id', '');
+                                            setSearchStudentTerm('');
+                                        }}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-black"
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+                            
+                            {isDropdownOpen && (
+                                <div className="absolute z-55 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-60 overflow-y-auto custom-scroll">
+                                    {filteredActiveEnrollments.map(enrollment => (
+                                        <button
+                                            key={enrollment.id}
+                                            type="button"
+                                            onClick={() => {
+                                                setData('enrollment_id', enrollment.id.toString());
+                                                setSearchStudentTerm(enrollment.learner.full_name);
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className="w-full text-left px-4 py-2 hover:bg-slate-50 transition-colors text-xs border-b border-slate-100 flex items-center justify-between"
+                                        >
+                                            <div>
+                                                <p className="font-black text-slate-800 uppercase">{enrollment.learner?.full_name}</p>
+                                                <p className="text-[9px] font-bold text-slate-400 mt-0.5">Level: {enrollment.level} • Section: {enrollment.section?.name || 'Unassigned'}</p>
+                                            </div>
+                                            {data.enrollment_id === enrollment.id.toString() && (
+                                                <span className="text-emerald-600 font-black">✓</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                    {filteredActiveEnrollments.length === 0 && (
+                                        <div className="p-4 text-center text-slate-400 text-xs font-black uppercase tracking-wider">
+                                            No matching students found.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                             <InputError message={errors.enrollment_id} className="mt-1" />
                         </div>
 
