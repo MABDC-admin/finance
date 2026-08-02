@@ -132,68 +132,80 @@ export default function Dashboard({
             <div className="px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mx-auto w-full max-w-none space-y-8">
 
-                    {/* ── Hero Stat Cards ── */}
-                    <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                        <HeroStatCard
-                            icon={<PeopleIcon />}
+                    {/* ── Primary Stats Row (Finance Card Style) ── */}
+                    <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <PrimaryKpi
                             label="Total Enrolled Learners"
-                            value={totals.learners}
+                            value={totals.learners.toLocaleString()}
                             sub={`${totals.enrollments.toLocaleString()} active enrollments`}
-                            gradient="from-slate-900 via-slate-800 to-slate-900"
-                            accentColor="text-emerald-400"
-                            iconBg="bg-emerald-500/10 border-emerald-500/20"
-                            glowColor="bg-emerald-500/10"
+                            icon={<PeopleIcon />}
+                            gradient="from-[#005f3d] to-[#00a86b]"
                         />
-                        <HeroStatCard
-                            icon={<ApplicationIcon />}
+                        <PrimaryKpi
                             label="New Applications"
-                            value={totals.new_applications}
+                            value={totals.new_applications.toLocaleString()}
                             sub="Pending admission review"
-                            gradient="from-indigo-950 via-indigo-900 to-indigo-950"
-                            accentColor="text-indigo-400"
-                            iconBg="bg-indigo-500/10 border-indigo-500/20"
-                            glowColor="bg-indigo-500/10"
+                            icon={<ApplicationIcon />}
+                            gradient="from-[#1565c0] to-[#1e88e5]"
                         />
-                        <HeroStatCard
-                            icon={<DocumentIcon />}
-                            label="Pending Documents"
-                            value={pendingDocuments}
+                        <PrimaryKpi
+                            label="Pending Document Reviews"
+                            value={pendingDocuments.toLocaleString()}
                             sub={`${documentTotals.missing.toLocaleString()} missing requirements`}
-                            gradient="from-amber-950 via-amber-900 to-amber-950"
-                            accentColor="text-amber-400"
-                            iconBg="bg-amber-500/10 border-amber-500/20"
-                            glowColor="bg-amber-500/10"
-                            alert={pendingDocuments > 0}
+                            icon={<DocumentIcon />}
+                            gradient="from-[#b71c1c] to-[#e53935]"
+                            progress={documentTotal > 0 ? Math.round((documentTotals.verified / documentTotal) * 100) : 0}
                         />
-                        <HeroStatCard
-                            icon={<AssessmentIcon />}
+                        <PrimaryKpi
                             label="Learners for Assessment"
-                            value={totals.for_assessment}
+                            value={totals.for_assessment.toLocaleString()}
                             sub="Awaiting interview/testing"
-                            gradient="from-teal-950 via-teal-900 to-teal-950"
-                            accentColor="text-teal-400"
-                            iconBg="bg-teal-500/10 border-teal-500/20"
-                            glowColor="bg-teal-500/10"
+                            icon={<AssessmentIcon />}
+                            gradient="from-[#6a1b9a] to-[#9c27b0]"
                         />
-                        <HeroStatCard
+                    </section>
+
+                    {/* ── Secondary Stats Row (Finance Card Style) ── */}
+                    <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <SecondaryKpi
+                            label="Active Grade Levels"
+                            value={String(byLevel.length)}
+                            sub="Programs configured"
+                            color="text-[#005f3d]"
+                            bgColor="bg-[#e2f0d9]"
                             icon={<BuildingIcon />}
-                            label="Programs & Levels"
-                            value={byLevel.length}
-                            sub="Active grade levels"
-                            gradient="from-violet-950 via-violet-900 to-violet-950"
-                            accentColor="text-violet-400"
-                            iconBg="bg-violet-500/10 border-violet-500/20"
-                            glowColor="bg-violet-500/10"
                         />
-                        <HeroStatCard
-                            icon={<TransferIcon />}
+                        <SecondaryKpi
                             label="Withdrawn & Transferred"
-                            value={totals.withdrawn_transferred}
-                            sub="Learners leaving the institution"
-                            gradient="from-rose-950 via-rose-900 to-rose-950"
-                            accentColor="text-rose-400"
-                            iconBg="bg-rose-500/10 border-rose-500/20"
-                            glowColor="bg-rose-500/10"
+                            value={String(totals.withdrawn_transferred)}
+                            sub="Leaving the institution"
+                            color="text-[#b71c1c]"
+                            bgColor="bg-red-50"
+                            icon={<TransferIcon />}
+                        />
+                        <SecondaryKpi
+                            label="Verified Submissions"
+                            value={documentTotals.verified.toLocaleString()}
+                            sub="Approved credentials"
+                            color="text-indigo-700"
+                            bgColor="bg-indigo-50"
+                            icon={
+                                <svg className="w-5 h-5 text-indigo-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            }
+                        />
+                        <SecondaryKpi
+                            label="Missing Requirements"
+                            value={documentTotals.missing.toLocaleString()}
+                            sub="Action required"
+                            color="text-amber-700"
+                            bgColor="bg-amber-50"
+                            icon={
+                                <svg className="w-5 h-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            }
                         />
                     </section>
 
@@ -437,43 +449,40 @@ export default function Dashboard({
 
 /* ── Sub-Components ── */
 
-function HeroStatCard({
-    icon,
-    label,
-    value,
-    sub,
-    gradient,
-    accentColor,
-    iconBg,
-    glowColor,
-    alert = false,
-}: {
-    icon: React.ReactNode;
-    label: string;
-    value: number;
-    sub: string;
-    gradient: string;
-    accentColor: string;
-    iconBg: string;
-    glowColor: string;
-    alert?: boolean;
+function PrimaryKpi({ label, value, sub, icon, gradient, progress }: {
+    label: string; value: string; sub: string; icon: React.ReactNode; gradient: string; progress?: number;
 }) {
     return (
-        <div className={`bg-gradient-to-br ${gradient} rounded-2xl border border-white/5 p-5 shadow-lg group hover:shadow-xl transition-all duration-300 relative overflow-hidden`}>
-            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${glowColor} blur-2xl pointer-events-none`} />
-            <div className="flex items-center justify-between relative z-10">
-                <div className="space-y-2">
-                    <span className={`text-[9px] font-black ${accentColor} block tracking-widest uppercase`}>{label}</span>
-                    <span className="text-3xl font-black text-white block tracking-tight">{value.toLocaleString()}</span>
-                    <span className="text-[10px] font-bold text-slate-400 block">{sub}</span>
+        <div className={`bg-gradient-to-br ${gradient} rounded-2xl shadow-md p-5 text-white relative overflow-hidden`}>
+            <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/5 -translate-y-8 translate-x-8" />
+            <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">{icon}</div>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-70">{label}</p>
                 </div>
-                <div className={`h-11 w-11 rounded-xl ${iconBg} border ${accentColor} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300`}>
-                    <div className={accentColor}>{icon}</div>
-                </div>
+                <p className="text-2xl font-black leading-tight">{value}</p>
+                <p className="text-xs mt-1 opacity-70 font-semibold">{sub}</p>
+                {progress !== undefined && (
+                    <div className="mt-3 w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
+                        <div className="h-1.5 bg-white rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
+                    </div>
+                )}
             </div>
-            {alert && (
-                <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-            )}
+        </div>
+    );
+}
+
+function SecondaryKpi({ label, value, sub, color, bgColor, icon }: {
+    label: string; value: string; sub: string; color: string; bgColor: string; icon: React.ReactNode;
+}) {
+    return (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-4">
+            <div className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center shrink-0`}>{icon}</div>
+            <div className="min-w-0">
+                <p className={`text-xl font-black ${color}`}>{value}</p>
+                <p className="text-xs font-black text-slate-700 leading-tight">{label}</p>
+                <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{sub}</p>
+            </div>
         </div>
     );
 }
