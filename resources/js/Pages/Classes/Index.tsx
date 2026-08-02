@@ -428,17 +428,17 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                     {viewMode === 'board' && (
                         <div className="space-y-6">
                             {/* Grade Selector Row */}
-                            <div className="flex items-center gap-2.5 pb-4 border-b border-slate-200 overflow-x-auto custom-scroll flex-nowrap w-full">
+                            <div className="flex items-center gap-4 pb-5 border-b border-slate-200 w-full">
                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mr-2 flex-none">Grade Level Filter:</span>
-                                <div className="flex items-center gap-1.5 flex-nowrap">
+                                <div className="flex items-center gap-2 w-[80%] flex-nowrap min-w-0">
                                     {uniqueLevels.map(level => (
                                         <button 
                                             key={level}
                                             onClick={() => setSelectedLevel(level)}
-                                            className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition-all duration-150 flex-none ${
+                                            className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 text-center ${
                                                 selectedLevel === level 
-                                                    ? 'bg-[#005f3d] text-white shadow-sm' 
-                                                    : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200'
+                                                    ? 'bg-[#005f3d] text-white shadow-md scale-[1.03]' 
+                                                    : 'bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 hover:border-slate-350 shadow-sm'
                                             }`}
                                         >
                                             {level}
