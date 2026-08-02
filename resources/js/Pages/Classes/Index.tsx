@@ -96,24 +96,24 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
         const g = (gender || '').toLowerCase().trim();
         if (g === 'female') {
             return {
-                cardBg: 'bg-rose-50/20 hover:bg-rose-50/60 border-rose-200/50 hover:border-rose-450/40',
-                borderLeft: 'bg-rose-400 group-hover:bg-rose-500',
-                avatarBg: 'from-pink-500 to-rose-600',
-                hoverBorder: 'hover:border-rose-450/40'
+                cardBg: 'bg-[#fff0f3] hover:bg-[#ffe0e6] border-[#ffccd5] hover:border-[#ffb3c1]',
+                borderLeft: 'bg-[#ff4d6d]',
+                avatarBg: 'from-[#ff758f] to-[#ff4d6d]',
+                hoverBorder: 'hover:border-[#ff758f]'
             };
         }
         if (g === 'male') {
             return {
-                cardBg: 'bg-sky-50/20 hover:bg-sky-50/60 border-sky-200/50 hover:border-sky-450/40',
-                borderLeft: 'bg-sky-400 group-hover:bg-sky-500',
-                avatarBg: 'from-blue-500 to-indigo-650',
-                hoverBorder: 'hover:border-sky-450/40'
+                cardBg: 'bg-[#f0f9ff] hover:bg-[#e0f2fe] border-[#bae6fd] hover:border-[#7dd3fc]',
+                borderLeft: 'bg-[#0284c7]',
+                avatarBg: 'from-[#38bdf8] to-[#0284c7]',
+                hoverBorder: 'hover:border-[#38bdf8]'
             };
         }
         return {
             cardBg: 'bg-white hover:bg-slate-50 border-slate-200 hover:border-slate-350',
-            borderLeft: 'bg-slate-300 group-hover:bg-slate-450',
-            avatarBg: 'from-slate-500 to-slate-650',
+            borderLeft: 'bg-slate-400 group-hover:bg-slate-550',
+            avatarBg: 'from-slate-500 to-slate-600',
             hoverBorder: 'hover:border-slate-350'
         };
     };
