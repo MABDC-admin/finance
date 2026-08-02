@@ -404,8 +404,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                             {initials}
                                                         </div>
                                                         <div className="flex flex-col min-w-0">
-                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{lastName},</span>
-                                                            <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5 whitespace-nowrap truncate">{firstNames}</span>
+                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
                                                         </div>
                                                     </div>
 
@@ -496,8 +495,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                                     {initials}
                                                                 </div>
                                                                 <div className="flex flex-col min-w-0">
-                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{lastName},</span>
-                                                                    <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5 whitespace-nowrap truncate">{firstNames}</span>
+                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
                                                                 </div>
                                                             </div>
 
