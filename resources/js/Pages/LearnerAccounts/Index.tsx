@@ -73,14 +73,14 @@ export default function Index({ enrollments, levels = [], filters }: any) {
                                     <button
                                         key={s}
                                         onClick={() => handleStatusFilter(s)}
-                                        className={`text-xs px-3.5 py-1.5 rounded-full font-black uppercase tracking-wide transition-all flex items-center gap-1.5 ${
+                                        className={`text-sm px-6 py-2.5 rounded-xl font-black uppercase tracking-wider transition-all duration-150 flex items-center gap-2 shadow-sm border ${
                                             active
-                                                ? 'bg-[#005f3d] text-white shadow-sm'
-                                                : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                                ? 'bg-[#005f3d] text-white border-[#005f3d] ring-2 ring-[#005f3d]/20 scale-[1.03]'
+                                                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
                                         }`}
                                     >
                                         {cfg && (
-                                            <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white/70' : cfg.dot}`} />
+                                            <span className={`w-2 h-2 rounded-full ${active ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.8)]' : cfg.dot}`} />
                                         )}
                                         {s === '' ? 'All' : s}
                                     </button>
