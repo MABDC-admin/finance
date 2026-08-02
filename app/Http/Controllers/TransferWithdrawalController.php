@@ -17,7 +17,7 @@ class TransferWithdrawalController extends Controller
             ->get();
             
         $activeEnrollments = Enrollment::with(['learner', 'academicYear', 'section'])
-            ->where('status', 'enrolled')
+            ->whereIn('status', ['enrolled', 'active'])
             ->get();
 
         return Inertia::render('Transfers/Index', [
