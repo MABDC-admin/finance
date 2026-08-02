@@ -55,11 +55,40 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
         setLocalEnrollments(enrollments);
     }, [enrollments]);
 
-    // Unique list of grade levels
+    // Unique list of grade levels sorted naturally
+    const levelOrder: Record<string, number> = {
+        'NURSERY': 1,
+        'KINDER': 2,
+        'KINDERGARTEN': 2,
+        'PRE-SCHOOL': 3,
+        'L1': 11,
+        'L2': 12,
+        'L3': 13,
+        'L4': 14,
+        'L5': 15,
+        'L6': 16,
+        'L7': 17,
+        'L8': 18,
+        'L9': 19,
+        'L10': 20,
+        'L11': 21,
+        'L12': 22,
+    };
+
+    const getLevelPriority = (level: string) => {
+        const key = level.toUpperCase().trim();
+        if (levelOrder[key] !== undefined) return levelOrder[key];
+        const match = key.match(/^L(\d+)$/);
+        if (match) {
+            return 10 + parseInt(match[1], 10);
+        }
+        return 999;
+    };
+
     const uniqueLevels = Array.from(new Set([
         ...sections.map(s => s.level),
         ...enrollments.map(e => e.level)
-    ])).filter(Boolean).sort();
+    ])).filter(Boolean).sort((a, b) => getLevelPriority(a) - getLevelPriority(b));
 
     const [selectedLevel, setSelectedLevel] = useState<string>(uniqueLevels[0] || '');
 
@@ -150,7 +179,9 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
     // Filtered data for the board columns and KPI calculations
     const levelSections = sections.filter(s => s.level === selectedLevel);
     const levelEnrollments = localEnrollments.filter(e => e.level === selectedLevel);
-    const unassignedStudents = levelEnrollments.filter(e => e.section_id === null);
+    const unassignedStudents = levelEnrollments
+        .filter(e => e.section_id === null)
+        .sort((a, b) => a.learner.full_name.localeCompare(b.learner.full_name));
 
     // Global Stats for active year
     const totalStudentsCount = localEnrollments.length;
@@ -427,7 +458,9 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
 
                                 {/* 2. SECTIONS COLUMNS */}
                                 {levelSections.map(section => {
-                                    const sectionEnrollments = levelEnrollments.filter(e => e.section_id === section.id);
+                                    const sectionEnrollments = levelEnrollments
+                                        .filter(e => e.section_id === section.id)
+                                        .sort((a, b) => a.learner.full_name.localeCompare(b.learner.full_name));
                                     const isTargetOver = dragOverColumn === `section-${section.id}`;
                                     
                                     return (
