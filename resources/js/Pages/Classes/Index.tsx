@@ -330,7 +330,6 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                 {uniqueLevels.length === 0 && (
                                     <span className="text-sm font-medium text-slate-500">No student enrollments found.</span>
                                 )}
-                                
                                 <style dangerouslySetInnerHTML={{__html: `
                                     .custom-scroll::-webkit-scrollbar {
                                         width: 5px;
@@ -357,7 +356,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                     onDragOver={(e) => handleDragOver(e, 'unassigned')}
                                     onDragLeave={handleDragLeave}
                                     onDrop={(e) => handleDrop(e, null)}
-                                    className={`flex-none w-85 bg-slate-50/70 rounded-2xl border p-5 flex flex-col max-h-[750px] transition-all duration-200 ${
+                                    className={`flex-none w-[420px] bg-slate-50/70 rounded-2xl border p-5 flex flex-col max-h-[750px] transition-all duration-200 ${
                                         dragOverColumn === 'unassigned' 
                                             ? 'border-emerald-500 bg-emerald-50/40 ring-4 ring-emerald-500/10' 
                                             : 'border-slate-200 shadow-sm'
@@ -400,17 +399,17 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                 >
                                                     <div className="absolute left-0 top-0 bottom-0 w-1.2 bg-slate-300 group-hover:bg-emerald-500 transition-all"></div>
                                                     
-                                                    <div className="flex items-center gap-3 pl-1">
-                                                        <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
+                                                    <div className="flex items-center gap-3 pl-1 min-w-0">
+                                                        <div className={`flex-none h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
                                                             {initials}
                                                         </div>
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase">{lastName},</span>
-                                                            <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5">{firstNames}</span>
+                                                        <div className="flex flex-col min-w-0">
+                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{lastName},</span>
+                                                            <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5 whitespace-nowrap truncate">{firstNames}</span>
                                                         </div>
                                                     </div>
 
-                                                    <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1">
+                                                    <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1 flex-none">
                                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M8.5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-10 4a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                                                         </svg>
@@ -439,7 +438,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             onDragOver={(e) => handleDragOver(e, `section-${section.id}`)}
                                             onDragLeave={handleDragLeave}
                                             onDrop={(e) => handleDrop(e, section.id)}
-                                            className={`flex-none w-85 bg-white rounded-2xl border p-5 flex flex-col max-h-[750px] transition-all duration-200 ${
+                                            className={`flex-none w-[480px] bg-white rounded-2xl border p-5 flex flex-col max-h-[750px] transition-all duration-200 ${
                                                 isTargetOver 
                                                     ? 'border-emerald-500 bg-emerald-50/20 ring-4 ring-emerald-500/10 scale-[1.01]' 
                                                     : 'border-slate-200 shadow-sm'
@@ -447,7 +446,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                         >
                                             <div className="flex justify-between items-start mb-4 pb-3 border-b border-slate-100">
                                                 <div>
-                                                    <h3 className="font-black text-slate-950 text-sm tracking-tight uppercase">Section {section.name}</h3>
+                                                    <h3 className="font-black text-slate-955 text-sm tracking-tight uppercase">Section {section.name}</h3>
                                                     <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
                                                         <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${
                                                             section.session === 'morning' ? 'bg-amber-50 text-amber-700 border-amber-205/60' :
@@ -456,7 +455,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                         }`}>
                                                             {section.session}
                                                         </span>
-                                                        <span className="text-[10px] font-bold text-slate-400 truncate max-w-[120px]" title={section.teacher_name || 'TBA'}>
+                                                        <span className="text-[10px] font-bold text-slate-400 truncate max-w-[150px]" title={section.teacher_name || 'TBA'}>
                                                             Adviser: {section.teacher_name || 'TBA'}
                                                         </span>
                                                     </div>
@@ -492,17 +491,17 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                         >
                                                             <div className="absolute left-0 top-0 bottom-0 w-1.2 bg-emerald-500 group-hover:bg-emerald-600 transition-all"></div>
                                                             
-                                                            <div className="flex items-center gap-3 pl-1">
-                                                                <div className={`h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
+                                                            <div className="flex items-center gap-3 pl-1 min-w-0">
+                                                                <div className={`flex-none h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
                                                                     {initials}
                                                                 </div>
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase">{lastName},</span>
-                                                                    <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5">{firstNames}</span>
+                                                                <div className="flex flex-col min-w-0">
+                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{lastName},</span>
+                                                                    <span className="text-[10px] font-bold text-slate-500 tracking-tight leading-none mt-0.5 whitespace-nowrap truncate">{firstNames}</span>
                                                                 </div>
                                                             </div>
 
-                                                            <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1">
+                                                            <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1 flex-none">
                                                                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                                     <path d="M8.5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-10 4a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                                                                 </svg>
@@ -531,7 +530,6 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                             </div>
                         </div>
                     )}
-
                 </div>
             </div>
 
