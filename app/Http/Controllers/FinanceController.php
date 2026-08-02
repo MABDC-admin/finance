@@ -480,6 +480,12 @@ class FinanceController extends Controller
         return redirect()->back()->with('success', 'Grade level fee updated successfully.');
     }
 
+    public function destroySettings(\App\Models\GradeLevelFee $fee)
+    {
+        $fee->delete();
+        return redirect()->back()->with('success', 'Grade level tuition fee deleted successfully.');
+    }
+
     public function batchAssess(Request $request)
     {
         $validated = $request->validate([

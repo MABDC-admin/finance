@@ -114,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/finance', [FinanceController::class, 'index'])->name('finance.index');
         Route::get('/finance/settings', [FinanceController::class, 'settings'])->name('finance.settings');
         Route::post('/finance/settings', [FinanceController::class, 'storeSettings'])->name('finance.settings.store');
+        Route::delete('/finance/settings/{fee}', [FinanceController::class, 'destroySettings'])->name('finance.settings.destroy');
         Route::post('/finance/batch-assess', [FinanceController::class, 'batchAssess'])->name('finance.batch-assess');
         Route::get('/finance/receipt/{receipt}', [FinanceController::class, 'showReceipt'])->name('finance.receipt');
         Route::resource('finance/fees', FeeStructureController::class)->names('finance.fees');
