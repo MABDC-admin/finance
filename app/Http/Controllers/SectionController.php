@@ -24,7 +24,7 @@ class SectionController extends Controller
 
         $enrollments = [];
         if ($activeYear) {
-            $enrollments = Enrollment::with('learner:id,full_name,normalized_name')
+            $enrollments = Enrollment::with('learner:id,full_name,normalized_name,gender')
                 ->where('academic_year_id', $activeYear->id)
                 ->whereIn('status', ['enrolled', 'active'])
                 ->get();
@@ -56,10 +56,10 @@ class SectionController extends Controller
     public function show(Section $section): Response
     {
         // Load the enrolled students assigned to this section
-        $section->load(['enrollments.learner:id,full_name,normalized_name']);
+        $section->load(['enrollments.learner:id,full_name,normalized_name,gender']);
 
         // Load the enrolled students in the same academic year and level who DO NOT have a section
-        $unassigned = Enrollment::with('learner:id,full_name,normalized_name')
+        $unassigned = Enrollment::with('learner:id,full_name,normalized_name,gender')
             ->where('academic_year_id', $section->academic_year_id)
             ->where('level', $section->level)
             ->whereNull('section_id')

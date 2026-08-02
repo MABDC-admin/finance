@@ -28,6 +28,7 @@ type Learner = {
     id: number;
     full_name: string;
     normalized_name: string;
+    gender?: string;
 };
 
 type Enrollment = {
