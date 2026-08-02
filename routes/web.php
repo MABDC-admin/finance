@@ -74,6 +74,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/learners/{learner}/documents/{documentRequirement}', [DocumentRequirementController::class, 'update'])
         ->middleware('module:student_management')
         ->name('learners.documents.update');
+    Route::post('/learners/{learner}/documents/{documentRequirement}/analyze', [DocumentRequirementController::class, 'analyze'])
+        ->middleware('module:student_management')
+        ->name('learners.documents.analyze');
+    Route::post('/learners/{learner}/documents/{documentRequirement}/upload', [DocumentRequirementController::class, 'upload'])
+        ->middleware('module:student_management')
+        ->name('learners.documents.upload');
     Route::get('/learners/{learner}', [LearnerController::class, 'show'])
         ->middleware('module:student_management')
         ->name('learners.show');

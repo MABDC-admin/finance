@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Modal from '@/Components/Modal';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler, useState, useRef } from 'react';
+import axios from 'axios';
 
 type ActiveYear = {
     id: number;
@@ -31,6 +32,11 @@ type DocumentRequirement = {
     verified_at: string | null;
     expires_on: string | null;
     notes: string | null;
+    metadata?: {
+        file_path?: string;
+        file_name?: string;
+        mime_type?: string;
+    } | null;
 };
 
 const documentStatuses = [
@@ -485,15 +491,87 @@ function DetailRow({ label, value }: { label: string; value: string }) {
 }
 
 function DocumentRequirementForm({ learnerId, document }: { learnerId: number; document: DocumentRequirement; }) {
-    const { data, setData, patch, processing, errors, isDirty } = useForm({
+    const [analyzing, setAnalyzing] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [aiResult, setAiResult] = useState<{
+        document_type?: string;
+        match_status?: boolean;
+        student_name_on_document?: string;
+        expires_on?: string | null;
+        notes?: string;
+    } | null>(null);
+
+    const { data, setData, post, patch, processing, errors, isDirty } = useForm({
         status: document.status,
         expires_on: document.expires_on ?? '',
         notes: document.notes ?? '',
+        file: null as File | null,
     });
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setSelectedFile(file);
+        setData('file', file);
+
+        // Auto-run AI Analysis if it is an image
+        if (file.type.startsWith('image/')) {
+            setAnalyzing(true);
+            setAiResult(null);
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await axios.post(
+                    route('learners.documents.analyze', [learnerId, document.id]),
+                    formData,
+                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                );
+                
+                const result = response.data;
+                setAiResult(result);
+                
+                // If match is found, propose values to form
+                if (result.match_status) {
+                    setData((old) => ({
+                        ...old,
+                        expires_on: result.expires_on || '',
+                        status: 'verified',
+                        notes: result.notes || '',
+                    }));
+                } else {
+                    setData('notes', `AI WARNING: Name on document (${result.student_name_on_document}) may not match student.`);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('AI OCR Analysis failed. You can still upload the file manually.');
+            } finally {
+                setAnalyzing(false);
+            }
+        }
+    };
 
     const submit: FormEventHandler = (event) => {
         event.preventDefault();
-        patch(route('learners.documents.update', [learnerId, document.id]), { preserveScroll: true });
+        
+        if (selectedFile) {
+            // Use POST multipart upload route if a file is present
+            post(route('learners.documents.upload', [learnerId, document.id]), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setSelectedFile(null);
+                    setAiResult(null);
+                }
+            });
+        } else {
+            // Standard update patch
+            patch(route('learners.documents.update', [learnerId, document.id]), {
+                preserveScroll: true
+            });
+        }
     };
 
     const statusAccentBorder = {
@@ -505,60 +583,151 @@ function DocumentRequirementForm({ learnerId, document }: { learnerId: number; d
     }[document.status] || 'border-l-slate-300';
 
     return (
-        <form
-            onSubmit={submit}
-            className={`border-l-4 py-3 px-4 grid gap-4 ${statusAccentBorder} md:grid-cols-[1.5fr_1fr_1fr_2fr_auto] items-center text-sm hover:bg-slate-50/50 transition-colors`}
-        >
-            <div className="min-w-0">
-                <p className="font-bold text-slate-800 leading-tight truncate" title={document.label}>
-                    {document.label}
-                </p>
-                <div className="mt-1.5">
-                    <StatusBadge status={document.status} />
+        <div className="flex flex-col gap-2">
+            <form
+                onSubmit={submit}
+                className={`border-l-4 py-3 px-4 grid gap-4 ${statusAccentBorder} md:grid-cols-[1.5fr_1fr_1fr_1.5fr_1fr_auto] items-center text-sm hover:bg-slate-50/50 transition-colors`}
+            >
+                <div className="min-w-0">
+                    <p className="font-bold text-slate-800 leading-tight truncate" title={document.label}>
+                        {document.label}
+                    </p>
+                    <div className="mt-1.5 flex items-center gap-2">
+                        <StatusBadge status={document.status} />
+                        {document.metadata?.file_path && (
+                            <a
+                                href={`/storage/${document.metadata.file_path}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-emerald-600 hover:underline font-bold flex items-center gap-0.5"
+                            >
+                                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View File
+                            </a>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            <div className="min-w-0">
-                <select
-                    value={data.status}
-                    onChange={(event) => setData('status', event.target.value)}
-                    className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20"
-                >
-                    {documentStatuses.map((status) => (
-                        <option key={status.value} value={status.value}>{status.label}</option>
-                    ))}
-                </select>
-            </div>
+                <div className="min-w-0">
+                    <select
+                        value={data.status}
+                        onChange={(event) => setData('status', event.target.value)}
+                        className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20"
+                    >
+                        {documentStatuses.map((status) => (
+                            <option key={status.value} value={status.value}>{status.label}</option>
+                        ))}
+                    </select>
+                </div>
 
-            <div className="min-w-0">
-                <input
-                    type="date"
-                    value={data.expires_on}
-                    onChange={(event) => setData('expires_on', event.target.value)}
-                    className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20"
-                />
-            </div>
+                <div className="min-w-0">
+                    <input
+                        type="date"
+                        value={data.expires_on}
+                        onChange={(event) => setData('expires_on', event.target.value)}
+                        className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20"
+                    />
+                </div>
 
-            <div className="min-w-0">
-                <input
-                    type="text"
-                    value={data.notes}
-                    onChange={(event) => setData('notes', event.target.value)}
-                    placeholder="Remarks..."
-                    className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20 placeholder:text-slate-300"
-                />
-            </div>
+                <div className="min-w-0">
+                    <input
+                        type="text"
+                        value={data.notes}
+                        onChange={(event) => setData('notes', event.target.value)}
+                        placeholder="Remarks..."
+                        className="block w-full rounded-md border-slate-200 bg-white py-1.5 px-2.5 text-xs font-bold text-slate-800 shadow-sm focus:border-emerald-500 focus:ring-emerald-500/20 placeholder:text-slate-300"
+                    />
+                </div>
 
-            <div>
-                <button
-                    type="submit"
-                    disabled={processing || !isDirty}
-                    className="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 px-4 text-xs font-bold text-white shadow hover:bg-emerald-700 active:scale-95 disabled:opacity-40"
-                >
-                    Save
-                </button>
-            </div>
-        </form>
+                {/* Upload File Input */}
+                <div className="min-w-0 flex items-center gap-2">
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={analyzing}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-md border transition-colors ${
+                            selectedFile
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                        }`}
+                    >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        {selectedFile ? 'Change File' : 'Upload'}
+                    </button>
+                    {selectedFile && (
+                        <span className="text-[10px] font-bold text-slate-400 truncate max-w-[80px]" title={selectedFile.name}>
+                            {selectedFile.name}
+                        </span>
+                    )}
+                </div>
+
+                <div>
+                    <button
+                        type="submit"
+                        disabled={processing || (!isDirty && !selectedFile) || analyzing}
+                        className="inline-flex h-8 items-center justify-center rounded-md bg-emerald-600 px-4 text-xs font-bold text-white shadow hover:bg-emerald-700 active:scale-95 disabled:opacity-40"
+                    >
+                        Save
+                    </button>
+                </div>
+            </form>
+
+            {/* AI Review Banner */}
+            {analyzing && (
+                <div className="mx-4 mb-2 p-3 bg-slate-50 border border-slate-150 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-500 animate-pulse">
+                    <svg className="w-4 h-4 text-emerald-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span>Gemini AI is doing OCR & verifying details...</span>
+                </div>
+            )}
+
+            {aiResult && (
+                <div className={`mx-4 mb-2 p-3 border rounded-lg text-xs leading-relaxed ${
+                    aiResult.match_status
+                        ? 'bg-emerald-50/60 border-emerald-200 text-emerald-800'
+                        : 'bg-rose-50/60 border-rose-200 text-rose-800'
+                }`}>
+                    <div className="flex items-center gap-1.5 font-black mb-1">
+                        {aiResult.match_status ? (
+                            <>
+                                <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span>AI MATCH SUCCESSFUL</span>
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-4 h-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>AI VERIFICATION ALERT</span>
+                            </>
+                        )}
+                    </div>
+                    <p className="font-semibold">{aiResult.notes}</p>
+                    <div className="flex gap-4 mt-2 font-bold text-[11px] text-slate-500">
+                        <span>Extracted Name: <strong className="text-slate-800">{aiResult.student_name_on_document || 'None'}</strong></span>
+                        {aiResult.expires_on && (
+                            <span>Expiration: <strong className="text-slate-800">{aiResult.expires_on}</strong></span>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
 
