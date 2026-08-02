@@ -373,7 +373,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                     </div>
 
                                     {/* Drop Area */}
-                                    <div className="flex-1 overflow-y-auto space-y-3 min-h-[300px] max-h-[600px] pr-1.5 custom-scroll">
+                                    <div className="flex-1 space-y-1 min-h-[300px] pr-1.5">
                                         {unassignedStudents.map(e => {
                                             const names = e.learner.full_name.split(',');
                                             const lastName = names[0]?.trim() || '';
@@ -395,21 +395,21 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                     key={e.id}
                                                     draggable
                                                     onDragStart={(evt) => handleDragStart(evt, e.id)}
-                                                    className="bg-white border border-slate-200/80 p-3 rounded-xl shadow-xs hover:shadow-md hover:border-emerald-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing transition-all select-none group relative overflow-hidden flex items-center justify-between"
+                                                    className="bg-white border border-slate-200/80 py-1.5 px-3 rounded-lg shadow-xs hover:shadow-sm hover:border-emerald-500 cursor-grab active:cursor-grabbing transition-all select-none group relative overflow-hidden flex items-center justify-between"
                                                 >
-                                                    <div className="absolute left-0 top-0 bottom-0 w-1.2 bg-slate-300 group-hover:bg-emerald-500 transition-all"></div>
+                                                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-slate-355 group-hover:bg-emerald-500 transition-all"></div>
                                                     
-                                                    <div className="flex items-center gap-3 pl-1 min-w-0">
-                                                        <div className={`flex-none h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
+                                                    <div className="flex items-center gap-2.5 pl-1 min-w-0">
+                                                        <div className={`flex-none h-6 w-6 rounded-md bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-[9px] shadow-sm`}>
                                                             {initials}
                                                         </div>
                                                         <div className="flex flex-col min-w-0">
-                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
+                                                            <span className="text-[11px] font-black text-slate-800 tracking-tight leading-none uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
                                                         </div>
                                                     </div>
 
                                                     <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1 flex-none">
-                                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                                                             <path d="M8.5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-10 4a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                                                         </svg>
                                                     </div>
@@ -418,9 +418,8 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                         })}
 
                                         {unassignedStudents.length === 0 && (
-                                            <div className="text-center py-20 border-2 border-dashed border-slate-200 rounded-xl bg-white/50">
-                                                <span className="text-2xl mb-1 block">🎉</span>
-                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">All students sectioned!</p>
+                                            <div className="text-center py-10 border border-dashed border-slate-200 rounded-lg bg-white/50">
+                                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">All students sectioned!</p>
                                             </div>
                                         )}
                                     </div>
@@ -437,16 +436,16 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             onDragOver={(e) => handleDragOver(e, `section-${section.id}`)}
                                             onDragLeave={handleDragLeave}
                                             onDrop={(e) => handleDrop(e, section.id)}
-                                            className={`flex-none w-[480px] bg-white rounded-2xl border p-5 flex flex-col max-h-[750px] transition-all duration-200 ${
+                                            className={`flex-none w-[480px] bg-white rounded-2xl border p-5 flex flex-col transition-all duration-200 ${
                                                 isTargetOver 
                                                     ? 'border-emerald-500 bg-emerald-50/20 ring-4 ring-emerald-500/10 scale-[1.01]' 
                                                     : 'border-slate-200 shadow-sm'
                                             }`}
                                         >
-                                            <div className="flex justify-between items-start mb-4 pb-3 border-b border-slate-100">
+                                            <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-100">
                                                 <div>
                                                     <h3 className="font-black text-slate-955 text-sm tracking-tight uppercase">Section {section.name}</h3>
-                                                    <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                                    <div className="flex flex-wrap items-center gap-1.5 mt-1">
                                                         <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${
                                                             section.session === 'morning' ? 'bg-amber-50 text-amber-700 border-amber-205/60' :
                                                             section.session === 'afternoon' ? 'bg-indigo-50 text-indigo-700 border-indigo-205/60' :
@@ -465,7 +464,7 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             </div>
 
                                             {/* Drop Area */}
-                                            <div className="flex-1 overflow-y-auto space-y-3 min-h-[300px] max-h-[600px] bg-slate-50/50 p-2.5 rounded-xl border border-dashed border-slate-200/80 pr-1.5 custom-scroll">
+                                            <div className="flex-1 space-y-1 bg-slate-50/50 p-2 rounded-xl border border-dashed border-slate-200/80 pr-1.5">
                                                 {sectionEnrollments.map(e => {
                                                     const names = e.learner.full_name.split(',');
                                                     const lastName = names[0]?.trim() || '';
@@ -486,21 +485,21 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                             key={e.id}
                                                             draggable
                                                             onDragStart={(evt) => handleDragStart(evt, e.id)}
-                                                            className="bg-white border border-slate-200 p-3 rounded-xl shadow-xs hover:shadow-md hover:border-emerald-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing transition-all select-none group relative overflow-hidden flex items-center justify-between"
+                                                            className="bg-white border border-slate-200 p-2 rounded-lg shadow-xs hover:shadow-md hover:border-emerald-500 hover:-translate-y-0.5 cursor-grab active:cursor-grabbing transition-all select-none group relative overflow-hidden flex items-center justify-between"
                                                         >
-                                                            <div className="absolute left-0 top-0 bottom-0 w-1.2 bg-emerald-500 group-hover:bg-emerald-600 transition-all"></div>
+                                                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 group-hover:bg-emerald-600 transition-all"></div>
                                                             
-                                                            <div className="flex items-center gap-3 pl-1 min-w-0">
-                                                                <div className={`flex-none h-8 w-8 rounded-lg bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-xs shadow-sm`}>
+                                                            <div className="flex items-center gap-2.5 pl-1 min-w-0">
+                                                                <div className={`flex-none h-6 w-6 rounded-md bg-gradient-to-br ${gradient} text-white flex items-center justify-center font-black text-[9px] shadow-sm`}>
                                                                     {initials}
                                                                 </div>
                                                                 <div className="flex flex-col min-w-0">
-                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-tight uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
+                                                                    <span className="text-[11px] font-black text-slate-800 tracking-tight leading-none uppercase whitespace-nowrap truncate">{e.learner.full_name}</span>
                                                                 </div>
                                                             </div>
 
                                                             <div className="text-slate-300 group-hover:text-emerald-500 transition-colors pr-1 flex-none">
-                                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                                                                     <path d="M8.5 10a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm-10 4a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm5 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
                                                                 </svg>
                                                             </div>
@@ -509,9 +508,8 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                                 })}
 
                                                 {sectionEnrollments.length === 0 && (
-                                                    <div className="text-center py-20 border-2 border-dashed border-slate-200/60 rounded-xl flex flex-col items-center justify-center">
-                                                        <span className="text-2xl mb-1 text-slate-300">📥</span>
-                                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Drag student here</p>
+                                                    <div className="text-center py-10 border border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center bg-white/40">
+                                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Drag here</p>
                                                     </div>
                                                 )}
                                             </div>
