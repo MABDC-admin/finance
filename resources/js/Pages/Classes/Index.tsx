@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm, router } from '@inertiajs/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import Modal from '@/Components/Modal';
 import InputLabel from '@/Components/InputLabel';
 import TextInput from '@/Components/TextInput';
@@ -604,18 +605,17 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                                             </div>
 
                                             <div className="flex justify-between items-start mb-3 pb-2 border-b border-slate-150/40 relative z-10">
-                                                <div>
+                                                <div className="min-w-0 flex-1">
                                                     <h3 className={`font-black text-sm tracking-tight uppercase ${style.headerText}`}>Section {section.name}</h3>
                                                     <div className="flex flex-wrap items-center gap-1.5 mt-1">
                                                         <span className={`inline-flex px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border ${style.badge}`}>
                                                             {section.session}
                                                         </span>
-                                                        <span className="text-[10px] font-bold text-slate-400 truncate max-w-[150px]" title={section.teacher_name || 'TBA'}>
-                                                            Adviser: {section.teacher_name || 'TBA'}
-                                                        </span>
                                                     </div>
+                                                    {/* Inline Editable Teacher */}
+                                                    <TeacherEditor sectionId={section.id} initialName={section.teacher_name || ''} />
                                                 </div>
-                                                <span className={`${style.countBadge} px-2.5 py-0.5 rounded-full text-xs font-black`}>
+                                                <span className={`${style.countBadge} px-2.5 py-0.5 rounded-full text-xs font-black flex-none ml-2`}>
                                                     {sectionEnrollments.length}
                                                 </span>
                                             </div>
@@ -745,5 +745,83 @@ export default function ClassesIndex({ activeYear, sections, enrollments = [] }:
                 </form>
             </Modal>
         </AuthenticatedLayout>
+    );
+}
+
+function TeacherEditor({ sectionId, initialName }: { sectionId: number; initialName: string }) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [name, setName] = useState(initialName);
+    const [savedName, setSavedName] = useState(initialName);
+    const [saving, setSaving] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isEditing && inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.select();
+        }
+    }, [isEditing]);
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            await axios.patch(`/classes/${sectionId}`, { teacher_name: name || null });
+            setSavedName(name);
+            setIsEditing(false);
+        } catch {
+            setName(savedName);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleCancel = () => {
+        setName(savedName);
+        setIsEditing(false);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') handleSave();
+        if (e.key === 'Escape') handleCancel();
+    };
+
+    if (isEditing) {
+        return (
+            <div className="flex items-center gap-1.5 mt-1.5">
+                <input
+                    ref={inputRef}
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Enter adviser name..."
+                    className="text-[11px] font-bold rounded-md border-slate-200 px-2 py-1 w-full focus:ring-emerald-500 focus:border-emerald-500"
+                    disabled={saving}
+                />
+                <button onClick={handleSave} disabled={saving} className="text-emerald-600 hover:text-emerald-800 flex-none" title="Save">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+                <button onClick={handleCancel} className="text-slate-400 hover:text-slate-600 flex-none" title="Cancel">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <button
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1 mt-1.5 text-[10px] font-bold text-slate-400 hover:text-emerald-600 transition-colors group cursor-pointer"
+            title="Click to edit adviser"
+        >
+            <svg className="w-3 h-3 text-slate-300 group-hover:text-emerald-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            <span className="truncate max-w-[180px]">Adviser: {savedName || 'Click to assign'}</span>
+        </button>
     );
 }

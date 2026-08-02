@@ -97,6 +97,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/classes', [SectionController::class, 'index'])->name('classes.index');
     Route::post('/classes', [SectionController::class, 'store'])->name('classes.store');
+    Route::patch('/classes/{section}', [SectionController::class, 'update'])->name('classes.update');
     Route::get('/classes/{section}', [SectionController::class, 'show'])->name('classes.show');
     Route::post('/classes/{section}/assign', [SectionController::class, 'assign'])->name('classes.assign');
     Route::post('/classes/{section}/unassign', [SectionController::class, 'unassign'])->name('classes.unassign');

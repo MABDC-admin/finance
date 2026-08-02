@@ -97,20 +97,32 @@ export default function Dashboard({
         ? 0
         : registrationPages[0].length;
 
+    const completionRate = totals.learners > 0 
+        ? Math.round((documentTotals.verified / Math.max(documentTotal, 1)) * 100) 
+        : 0;
+
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-4xl font-black tracking-tight text-slate-900">
-                            Registrar Dashboard
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-2">
+                            🏫 Registrar Command Center
+                        </div>
+                        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+                            Dashboard Overview
                         </h1>
-                        <p className="mt-3 text-base font-medium text-slate-500">
-                            Central overview of enrollment, admissions, and compliance.
+                        <p className="mt-1 text-sm font-medium text-slate-500">
+                            Real-time institutional metrics and academic operations.
                         </p>
                     </div>
-                    <div className="inline-flex items-center rounded-xl bg-green-50 px-4 py-3 text-sm font-black text-green-900 ring-1 ring-green-100">
-                        {activeYear?.name ?? 'No active school year'}
+                    <div className="flex items-center gap-3">
+                        <div className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#005f3d] to-[#007a4d] px-4 py-2.5 text-sm font-black text-white shadow-md">
+                            <svg className="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {activeYear?.name ?? 'No active school year'}
+                        </div>
                     </div>
                 </div>
             }
@@ -118,55 +130,82 @@ export default function Dashboard({
             <Head title="Registrar Dashboard" />
 
             <div className="px-4 py-8 sm:px-6 lg:px-8">
-                <div className="mx-auto w-full max-w-none space-y-7">
-                    <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        <StatCard
+                <div className="mx-auto w-full max-w-none space-y-8">
+
+                    {/* ── Hero Stat Cards ── */}
+                    <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                        <HeroStatCard
                             icon={<PeopleIcon />}
                             label="Total Enrolled Learners"
                             value={totals.learners}
-                            helper={`${totals.enrollments.toLocaleString()} active enrollments`}
-                            trend="up"
+                            sub={`${totals.enrollments.toLocaleString()} active enrollments`}
+                            gradient="from-slate-900 via-slate-800 to-slate-900"
+                            accentColor="text-emerald-400"
+                            iconBg="bg-emerald-500/10 border-emerald-500/20"
+                            glowColor="bg-emerald-500/10"
                         />
-                        <StatCard
+                        <HeroStatCard
                             icon={<ApplicationIcon />}
                             label="New Applications"
                             value={totals.new_applications}
-                            helper="Pending admission review"
-                            trend="flat"
+                            sub="Pending admission review"
+                            gradient="from-indigo-950 via-indigo-900 to-indigo-950"
+                            accentColor="text-indigo-400"
+                            iconBg="bg-indigo-500/10 border-indigo-500/20"
+                            glowColor="bg-indigo-500/10"
                         />
-                        <StatCard
+                        <HeroStatCard
                             icon={<DocumentIcon />}
-                            label="Pending Document Reviews"
+                            label="Pending Documents"
                             value={pendingDocuments}
-                            helper={`${documentTotals.missing.toLocaleString()} missing requirements`}
-                            trend={pendingDocuments > 0 ? 'down' : 'flat'}
+                            sub={`${documentTotals.missing.toLocaleString()} missing requirements`}
+                            gradient="from-amber-950 via-amber-900 to-amber-950"
+                            accentColor="text-amber-400"
+                            iconBg="bg-amber-500/10 border-amber-500/20"
+                            glowColor="bg-amber-500/10"
+                            alert={pendingDocuments > 0}
                         />
-                        <StatCard
+                        <HeroStatCard
                             icon={<AssessmentIcon />}
                             label="Learners for Assessment"
                             value={totals.for_assessment}
-                            helper="Awaiting interview/testing"
-                            trend="flat"
+                            sub="Awaiting interview/testing"
+                            gradient="from-teal-950 via-teal-900 to-teal-950"
+                            accentColor="text-teal-400"
+                            iconBg="bg-teal-500/10 border-teal-500/20"
+                            glowColor="bg-teal-500/10"
                         />
-                        <StatCard
+                        <HeroStatCard
                             icon={<BuildingIcon />}
                             label="Programs & Levels"
                             value={byLevel.length}
-                            helper="Active grade levels"
-                            trend="flat"
+                            sub="Active grade levels"
+                            gradient="from-violet-950 via-violet-900 to-violet-950"
+                            accentColor="text-violet-400"
+                            iconBg="bg-violet-500/10 border-violet-500/20"
+                            glowColor="bg-violet-500/10"
                         />
-                        <StatCard
+                        <HeroStatCard
                             icon={<TransferIcon />}
                             label="Withdrawn & Transferred"
                             value={totals.withdrawn_transferred}
-                            helper="Learners leaving the institution"
-                            trend="flat"
+                            sub="Learners leaving the institution"
+                            gradient="from-rose-950 via-rose-900 to-rose-950"
+                            accentColor="text-rose-400"
+                            iconBg="bg-rose-500/10 border-rose-500/20"
+                            glowColor="bg-rose-500/10"
                         />
                     </section>
 
-                    <section className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_340px]">
+                    {/* ── Enrollment Table + Recent Activities ── */}
+                    <section className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_380px]">
                         <Panel
-                            title="Enrollment by Level"
+                            title="Enrollment by Grade Level"
+                            icon={
+                                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            }
                             action={
                                 <div className="flex flex-wrap items-center gap-2">
                                     {[0, 1].map((page) => (
@@ -177,10 +216,10 @@ export default function Dashboard({
                                                 setRegistrationPage(page)
                                             }
                                             className={
-                                                'rounded-full px-3 py-1.5 text-xs font-black transition ' +
+                                                'rounded-lg px-3 py-1.5 text-[10px] font-black uppercase tracking-wider transition ' +
                                                 (registrationPage === page
-                                                    ? 'bg-green-700 text-white shadow-sm'
-                                                    : 'bg-green-50 text-green-800 hover:bg-green-100')
+                                                    ? 'bg-[#005f3d] text-white shadow-sm'
+                                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200')
                                             }
                                         >
                                             Page {page + 1}
@@ -188,9 +227,9 @@ export default function Dashboard({
                                     ))}
                                     <Link
                                         href={route('learners.index')}
-                                        className="text-sm font-black text-green-800 hover:text-green-950"
+                                        className="text-[10px] font-black text-emerald-700 hover:text-emerald-900 uppercase tracking-wider"
                                     >
-                                        View All
+                                        View All →
                                     </Link>
                                 </div>
                             }
@@ -198,68 +237,49 @@ export default function Dashboard({
                             <div className="overflow-x-auto">
                                 <table className="min-w-full">
                                     <thead className="bg-[#005f3d] text-white">
-                                        <tr className="text-left text-sm font-bold">
-                                            <th className="px-4 py-4 rounded-l-lg">
-                                                #
-                                            </th>
-                                            <th className="px-4 py-4">
-                                                Level
-                                            </th>
-                                            <th className="px-4 py-4">
-                                                Students
-                                            </th>
-                                            <th className="px-4 py-4">
-                                                Share
-                                            </th>
-                                            <th className="rounded-r-lg px-4 py-4">
-                                                Status
-                                            </th>
+                                        <tr className="text-left text-[10px] font-black uppercase tracking-widest">
+                                            <th className="px-4 py-3.5 rounded-l-lg">#</th>
+                                            <th className="px-4 py-3.5">Level</th>
+                                            <th className="px-4 py-3.5">Students</th>
+                                            <th className="px-4 py-3.5">Distribution</th>
+                                            <th className="rounded-r-lg px-4 py-3.5">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100">
                                         {visibleRegistrationRows.map(
                                             (item, index) => (
-                                                <tr key={item.level}>
-                                                    <td className="px-4 py-4 text-sm font-bold text-slate-500">
-                                                        {pageOffset +
-                                                            index +
-                                                            1}
+                                                <tr key={item.level} className="hover:bg-slate-50/50 transition-colors">
+                                                    <td className="px-4 py-3.5 text-xs font-bold text-slate-400">
+                                                        {pageOffset + index + 1}
                                                     </td>
-                                                    <td className="px-4 py-4 text-sm font-black text-slate-800">
-                                                        {item.level}
+                                                    <td className="px-4 py-3.5">
+                                                        <span className="text-xs font-black text-slate-800 uppercase">{item.level}</span>
                                                     </td>
-                                                    <td className="px-4 py-4 text-sm font-semibold text-slate-600">
+                                                    <td className="px-4 py-3.5 text-xs font-black text-slate-700">
                                                         {item.learners.toLocaleString()}
                                                     </td>
-                                                    <td className="px-4 py-4">
+                                                    <td className="px-4 py-3.5">
                                                         <LevelProgress
-                                                            value={
-                                                                item.learners
-                                                            }
+                                                            value={item.learners}
                                                             max={Math.max(
                                                                 ...byLevel.map(
-                                                                    (level) =>
-                                                                        level.learners,
+                                                                    (level) => level.learners,
                                                                 ),
                                                                 1,
                                                             )}
                                                         />
                                                     </td>
-                                                    <td className="px-4 py-4">
-                                                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-black text-green-700">
+                                                    <td className="px-4 py-3.5">
+                                                        <span className="rounded-md bg-emerald-50 px-2.5 py-0.5 text-[9px] font-black text-emerald-700 border border-emerald-100 uppercase">
                                                             Active
                                                         </span>
                                                     </td>
                                                 </tr>
                                             ),
                                         )}
-                                        {visibleRegistrationRows.length ===
-                                            0 && (
+                                        {visibleRegistrationRows.length === 0 && (
                                             <tr>
-                                                <td
-                                                    colSpan={5}
-                                                    className="px-4 py-8 text-center text-sm font-bold text-slate-400"
-                                                >
+                                                <td colSpan={5} className="px-4 py-8 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
                                                     No levels on this page.
                                                 </td>
                                             </tr>
@@ -269,98 +289,130 @@ export default function Dashboard({
                             </div>
                         </Panel>
 
-                        <Panel title="Recent Activities" elevated>
-                            <div className="space-y-4">
+                        {/* Recent Activities — Dark Theme */}
+                        <div className="rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800 shadow-xl overflow-hidden relative">
+                            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.08),transparent_60%)] pointer-events-none" />
+                            <div className="px-6 py-5 border-b border-slate-800/60 flex items-center gap-3 relative z-10">
+                                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h2 className="text-sm font-black text-white uppercase tracking-wider">Recent Activities</h2>
+                            </div>
+                            <div className="p-6 space-y-4 relative z-10">
                                 {recentActivities.length > 0 ? (
                                     recentActivities.map((activity) => (
-                                        <div key={activity.id} className="flex gap-4 border-b border-green-600/20 pb-4 last:border-0 last:pb-0">
-                                            <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-green-300 shadow-[0_0_8px_rgba(134,239,172,0.8)]" />
-                                            <div>
-                                                <p className="text-sm font-semibold text-white">
-                                                    {activity.actor} <span className="font-normal text-green-100">performed</span> {activity.event_type.replace('_', ' ')}
+                                        <div key={activity.id} className="flex gap-3 pb-4 border-b border-slate-800/50 last:border-0 last:pb-0">
+                                            <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-semibold text-slate-200 leading-relaxed">
+                                                    <span className="font-black text-white">{activity.actor}</span>{' '}
+                                                    <span className="text-slate-400">performed</span>{' '}
+                                                    <span className="text-emerald-300 font-bold">{activity.event_type.replace('_', ' ')}</span>
                                                 </p>
-                                                <p className="mt-1 text-xs font-medium text-green-200">
+                                                <p className="mt-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                                                     on {activity.subject_type} • {activity.created_at}
                                                 </p>
                                             </div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm font-semibold text-green-100">No recent activities logged.</p>
+                                    <p className="text-xs font-bold text-slate-500">No recent activities logged.</p>
                                 )}
                                 <div className="pt-2">
-                                    <Link href="#" className="text-xs font-black text-green-300 hover:text-white uppercase tracking-wider">
-                                        View Audit Trail &rarr;
+                                    <Link href="#" className="text-[10px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-wider transition-colors">
+                                        View Full Audit Trail →
                                     </Link>
                                 </div>
                             </div>
-                        </Panel>
+                        </div>
                     </section>
 
-                    <section className="grid gap-7 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                        <Panel title="Requirements & Document Status">
-                            <div className="grid gap-6 md:grid-cols-[220px_minmax(0,1fr)] md:items-center">
-                                <div className="mx-auto flex h-44 w-44 items-center justify-center rounded-full border-[22px] border-emerald-500 bg-white shadow-inner">
-                                    <div className="text-center">
-                                        <p className="text-3xl font-black text-slate-950">
-                                            {documentTotals.verified.toLocaleString()}
-                                        </p>
-                                        <p className="text-sm font-semibold text-slate-500">
-                                            Verified
-                                        </p>
+                    {/* ── Document Compliance + Quick Actions + Alerts ── */}
+                    <section className="grid gap-7 xl:grid-cols-3">
+                        {/* Document Compliance Ring */}
+                        <Panel
+                            title="Document Compliance"
+                            icon={
+                                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            }
+                        >
+                            <div className="flex flex-col items-center gap-5">
+                                {/* Compliance Circle */}
+                                <div className="relative h-40 w-40">
+                                    <svg className="h-40 w-40 -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" strokeWidth="12" className="stroke-slate-100" />
+                                        <circle
+                                            cx="60" cy="60" r="50" fill="none" strokeWidth="12"
+                                            strokeLinecap="round"
+                                            className="stroke-emerald-500"
+                                            strokeDasharray={`${completionRate * 3.14} ${314 - completionRate * 3.14}`}
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-3xl font-black text-slate-900">{completionRate}%</span>
+                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Verified</span>
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <LegendRow
-                                        color="bg-emerald-500"
-                                        label="Verified"
-                                        value={documentTotals.verified}
-                                        total={documentTotal}
-                                    />
-                                    <LegendRow
-                                        color="bg-amber-500"
-                                        label="Pending Verification"
-                                        value={documentTotals.pending_verification}
-                                        total={documentTotal}
-                                    />
-                                    <LegendRow
-                                        color="bg-blue-500"
-                                        label="Submitted"
-                                        value={documentTotals.submitted}
-                                        total={documentTotal}
-                                    />
-                                    <LegendRow
-                                        color="bg-rose-500"
-                                        label="Missing"
-                                        value={documentTotals.missing}
-                                        total={documentTotal}
-                                    />
+                                <div className="w-full space-y-3">
+                                    <DocLegend color="bg-emerald-500" label="Verified" value={documentTotals.verified} total={documentTotal} />
+                                    <DocLegend color="bg-amber-500" label="Pending" value={documentTotals.pending_verification} total={documentTotal} />
+                                    <DocLegend color="bg-blue-500" label="Submitted" value={documentTotals.submitted} total={documentTotal} />
+                                    <DocLegend color="bg-rose-500" label="Missing" value={documentTotals.missing} total={documentTotal} />
                                 </div>
                             </div>
                         </Panel>
 
+                        {/* Quick Navigation */}
                         <Panel
-                            title="Important Alerts & Deadlines"
+                            title="Quick Navigation"
+                            icon={
+                                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            }
+                        >
+                            <div className="grid grid-cols-2 gap-3">
+                                <QuickNavCard href={route('learners.index')} label="Student Records" emoji="👤" color="bg-indigo-50 border-indigo-100 hover:border-indigo-300" />
+                                <QuickNavCard href={route('admissions.index')} label="Admissions" emoji="📋" color="bg-amber-50 border-amber-100 hover:border-amber-300" />
+                                <QuickNavCard href={route('classes.index')} label="Sectioning" emoji="🏫" color="bg-emerald-50 border-emerald-100 hover:border-emerald-300" />
+                                <QuickNavCard href={route('transfers.index')} label="Transfers" emoji="🔄" color="bg-rose-50 border-rose-100 hover:border-rose-300" />
+                                <QuickNavCard href={route('enrollments.index')} label="Enrollment" emoji="📝" color="bg-teal-50 border-teal-100 hover:border-teal-300" />
+                                <QuickNavCard href={route('imports.index')} label="Data Import" emoji="📂" color="bg-violet-50 border-violet-100 hover:border-violet-300" />
+                            </div>
+                        </Panel>
+
+                        {/* Alerts & Deadlines */}
+                        <Panel
+                            title="Alerts & Deadlines"
+                            icon={
+                                <svg className="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                            }
                             action={
                                 <Link
                                     href={route('imports.index')}
-                                    className="text-sm font-black text-green-800 hover:text-green-950"
+                                    className="text-[10px] font-black text-emerald-700 hover:text-emerald-900 uppercase tracking-wider"
                                 >
-                                    Review All
+                                    Review All →
                                 </Link>
                             }
                         >
-                            <div className="divide-y divide-slate-100">
-                                <Announcement
+                            <div className="divide-y divide-slate-100 space-y-0">
+                                <AlertItem
                                     title="Enrollment records are ready for review."
                                     date={activeYear?.name ?? 'Current year'}
                                     type="info"
                                 />
                                 {duplicateLrnWarnings.length > 0 ? (
                                     duplicateLrnWarnings
-                                        .slice(0, 2)
+                                        .slice(0, 3)
                                         .map((warning, index) => (
-                                            <Announcement
+                                            <AlertItem
                                                 key={`${warning.row}-${index}`}
                                                 title={warning.message}
                                                 date={`Row ${warning.row ?? 'unknown'}`}
@@ -368,7 +420,7 @@ export default function Dashboard({
                                             />
                                         ))
                                 ) : (
-                                    <Announcement
+                                    <AlertItem
                                         title="No critical alerts at this time."
                                         date="System check"
                                         type="success"
@@ -383,188 +435,141 @@ export default function Dashboard({
     );
 }
 
-function Panel({
-    title,
-    action,
-    elevated = false,
-    children,
-}: {
-    title: string;
-    action?: React.ReactNode;
-    elevated?: boolean;
-    children: React.ReactNode;
-}) {
-    return (
-        <section
-            className={
-                'overflow-hidden rounded-2xl bg-white shadow-[0_15px_36px_rgba(15,23,42,0.08)] ring-1 ring-slate-100 ' +
-                (elevated ? 'border-t-4 border-emerald-500' : '')
-            }
-        >
-            <div
-                className={
-                    'flex items-center justify-between gap-4 px-6 py-5 ' +
-                    (elevated
-                        ? 'bg-slate-950 text-white'
-                        : 'border-b border-slate-100')
-                }
-            >
-                <h2
-                    className={
-                        'text-xl font-black ' +
-                        (elevated ? 'text-white' : 'text-slate-900')
-                    }
-                >
-                    {title}
-                </h2>
-                {action}
-            </div>
-            <div className={elevated ? 'bg-slate-900 p-6' : 'p-6'}>{children}</div>
-        </section>
-    );
-}
+/* ── Sub-Components ── */
 
-function StatCard({
+function HeroStatCard({
     icon,
     label,
     value,
-    helper,
-    trend,
+    sub,
+    gradient,
+    accentColor,
+    iconBg,
+    glowColor,
+    alert = false,
 }: {
     icon: React.ReactNode;
     label: string;
     value: number;
-    helper: string;
-    trend: 'up' | 'down' | 'flat';
+    sub: string;
+    gradient: string;
+    accentColor: string;
+    iconBg: string;
+    glowColor: string;
+    alert?: boolean;
 }) {
     return (
-        <section className="rounded-2xl bg-white p-6 shadow-premium ring-1 ring-slate-200/50 transition hover:shadow-[0_20px_40px_rgba(15,23,42,0.12)]">
-            <div className="flex items-start gap-5">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100">
-                    {icon}
+        <div className={`bg-gradient-to-br ${gradient} rounded-2xl border border-white/5 p-5 shadow-lg group hover:shadow-xl transition-all duration-300 relative overflow-hidden`}>
+            <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full ${glowColor} blur-2xl pointer-events-none`} />
+            <div className="flex items-center justify-between relative z-10">
+                <div className="space-y-2">
+                    <span className={`text-[9px] font-black ${accentColor} block tracking-widest uppercase`}>{label}</span>
+                    <span className="text-3xl font-black text-white block tracking-tight">{value.toLocaleString()}</span>
+                    <span className="text-[10px] font-bold text-slate-400 block">{sub}</span>
                 </div>
-                <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-500">
-                        {label}
-                    </p>
-                    <p className="mt-2 text-4xl font-black tracking-tight text-slate-900 drop-shadow-sm">
-                        {value.toLocaleString()}
-                    </p>
-                    <p
-                        className={
-                            'mt-3 text-xs font-black uppercase tracking-wide ' +
-                            (trend === 'down'
-                                ? 'text-rose-600'
-                                : trend === 'up'
-                                  ? 'text-emerald-600'
-                                  : 'text-slate-400')
-                        }
-                    >
-                        {trend === 'up' && 'Up '}
-                        {trend === 'down' && 'Action needed '}
-                        {trend === 'flat' && 'No change '}
-                        <span className="font-semibold text-slate-400 ml-1 normal-case tracking-normal">
-                            • {helper}
-                        </span>
-                    </p>
+                <div className={`h-11 w-11 rounded-xl ${iconBg} border ${accentColor} flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={accentColor}>{icon}</div>
                 </div>
             </div>
+            {alert && (
+                <div className="absolute top-3 right-3 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+            )}
+        </div>
+    );
+}
+
+function Panel({
+    title,
+    icon,
+    action,
+    children,
+}: {
+    title: string;
+    icon?: React.ReactNode;
+    action?: React.ReactNode;
+    children: React.ReactNode;
+}) {
+    return (
+        <section className="overflow-hidden rounded-2xl bg-white border border-slate-200 shadow-sm">
+            <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <div className="flex items-center gap-2.5">
+                    {icon && <div className="flex-none">{icon}</div>}
+                    <h2 className="text-sm font-black text-slate-800 uppercase tracking-wider">{title}</h2>
+                </div>
+                {action}
+            </div>
+            <div className="p-6">{children}</div>
         </section>
     );
 }
 
 function LevelProgress({ value, max }: { value: number; max: number }) {
+    const pct = Math.max((value / max) * 100, 8);
     return (
-        <div className="h-2 w-36 overflow-hidden rounded-full bg-slate-100">
-            <div
-                className="h-full rounded-full bg-emerald-500 shadow-glow"
-                style={{ width: `${Math.max((value / max) * 100, 8)}%` }}
-            />
+        <div className="flex items-center gap-2">
+            <div className="h-2 w-28 overflow-hidden rounded-full bg-slate-100">
+                <div
+                    className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500"
+                    style={{ width: `${pct}%` }}
+                />
+            </div>
+            <span className="text-[9px] font-black text-slate-400">{Math.round(pct)}%</span>
         </div>
     );
 }
 
-function QuickAction({
-    href,
-    icon,
-    label,
-}: {
-    href: string;
-    icon: React.ReactNode;
-    label: string;
-}) {
+function QuickNavCard({ href, label, emoji, color }: { href: string; label: string; emoji: string; color: string }) {
     return (
         <Link
             href={href}
-            className="flex items-center gap-4 rounded-xl px-3 py-3 font-black text-emerald-900 transition hover:bg-emerald-50"
+            className={`${color} border rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:shadow-md group`}
         >
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                {icon}
-            </span>
-            {label}
+            <span className="text-2xl group-hover:scale-110 transition-transform">{emoji}</span>
+            <span className="text-[10px] font-black text-slate-700 uppercase tracking-wider text-center">{label}</span>
         </Link>
     );
 }
 
-function LegendRow({
-    color,
-    label,
-    value,
-    total,
-}: {
-    color: string;
-    label: string;
-    value: number;
-    total: number;
-}) {
-    const percent = total === 0 ? 0 : Math.round((value / total) * 100);
-
+function DocLegend({ color, label, value, total }: { color: string; label: string; value: number; total: number }) {
+    const pct = total === 0 ? 0 : Math.round((value / total) * 100);
     return (
-        <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-                <span className={`h-4 w-4 rounded-full ${color}`} />
-                <span className="font-bold text-slate-700">{label}</span>
+        <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+                <span className={`h-3 w-3 rounded-full ${color} shadow-sm`} />
+                <span className="text-xs font-bold text-slate-600">{label}</span>
             </div>
-            <span className="font-black text-slate-900">
-                {value.toLocaleString()} <span className="text-slate-400 text-sm font-semibold ml-1">({percent}%)</span>
-            </span>
+            <div className="flex items-center gap-2">
+                <span className="text-xs font-black text-slate-800">{value.toLocaleString()}</span>
+                <span className="text-[10px] font-bold text-slate-400">({pct}%)</span>
+            </div>
         </div>
     );
 }
 
-function Announcement({ title, date, type }: { title: string; date: string; type: 'info' | 'warning' | 'success' }) {
-    const colors = {
-        info: 'bg-blue-500',
-        warning: 'bg-amber-500',
-        success: 'bg-emerald-500'
+function AlertItem({ title, date, type }: { title: string; date: string; type: 'info' | 'warning' | 'success' }) {
+    const styles = {
+        info: { dot: 'bg-blue-500', bg: 'hover:bg-blue-50/50' },
+        warning: { dot: 'bg-amber-500', bg: 'hover:bg-amber-50/50' },
+        success: { dot: 'bg-emerald-500', bg: 'hover:bg-emerald-50/50' },
     };
+    const s = styles[type];
     
     return (
-        <div className="flex gap-4 py-4 first:pt-0 last:pb-0 hover:bg-slate-50 transition -mx-6 px-6 cursor-pointer">
-            <span className={`mt-2 h-3 w-3 shrink-0 rounded-full ${colors[type]}`} />
-            <div>
-                <p className="font-bold leading-6 text-slate-900">
-                    {title}
-                </p>
-                <p className="mt-1 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    {date}
-                </p>
+        <div className={`flex gap-3 py-3.5 first:pt-0 last:pb-0 ${s.bg} transition-colors -mx-6 px-6 cursor-pointer`}>
+            <span className={`mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full ${s.dot} shadow-sm`} />
+            <div className="min-w-0">
+                <p className="text-xs font-bold leading-relaxed text-slate-800">{title}</p>
+                <p className="mt-0.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">{date}</p>
             </div>
         </div>
     );
 }
+
+/* ── SVG Icons ── */
 
 function IconShell({ children }: { children: React.ReactNode }) {
     return (
-        <svg
-            className="h-8 w-8"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
+        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {children}
         </svg>
     );

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademicYear;
 use App\Models\Enrollment;
 use App\Models\Section;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,6 +52,17 @@ class SectionController extends Controller
         Section::create($validated);
 
         return redirect()->back()->with('success', 'Section created successfully.');
+    }
+
+    public function update(Request $request, Section $section): JsonResponse
+    {
+        $validated = $request->validate([
+            'teacher_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $section->update($validated);
+
+        return response()->json(['success' => true, 'teacher_name' => $section->teacher_name]);
     }
 
     public function show(Section $section): Response
