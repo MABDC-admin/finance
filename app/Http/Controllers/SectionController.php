@@ -22,9 +22,18 @@ class SectionController extends Controller
             ->orderBy('name')
             ->get();
 
+        $enrollments = [];
+        if ($activeYear) {
+            $enrollments = Enrollment::with('learner:id,full_name,normalized_name')
+                ->where('academic_year_id', $activeYear->id)
+                ->whereIn('status', ['enrolled', 'active'])
+                ->get();
+        }
+
         return Inertia::render('Classes/Index', [
             'activeYear' => $activeYear,
             'sections' => $sections,
+            'enrollments' => $enrollments,
         ]);
     }
 
